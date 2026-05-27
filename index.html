@@ -17,6 +17,7 @@
   box-shadow:0 2px 16px rgba(0,0,0,.45);
   gap:10px;
 }
+
 .toolbar-brand{
   font-family:'Baloo 2',sans-serif;font-weight:800;font-size:14pt;
   color:white;white-space:nowrap;
@@ -294,7 +295,12 @@ td.activity:hover .edit-icon{opacity:.5;}
     <button class="tbtn tbtn-red" onclick="removeLastRow()">➖ Xóa hàng cuối</button>
     <button class="tbtn tbtn-purple" onclick="resetAll()">🔄 Đặt lại</button>
     <button class="tbtn tbtn-print" onclick="window.print()">🖨️ In / PDF</button>
+     <button class="add-row-btn" onclick="addSession()">➕ Thêm tiết học</button>
+      <button class="add-row-btn"  onclick="addBreak()">☕ Thêm giờ nghỉ</button>
+      <button class="add-row-btn" onclick="addDay()">➕ Thêm cột ngày</button>
+    </div>
   </div>
+  
 </div>
 
 <!-- ═══ A4 PAGE ═══ -->
@@ -329,20 +335,20 @@ td.activity:hover .edit-icon{opacity:.5;}
   <!-- TABLE -->
   <div class="schedule-wrap">
     <div id="tbl"></div>
-    <div class="add-row-area no-print">
+    <!-- <div class="add-row-area no-print">
       <button class="add-row-btn" onclick="addSession()">➕ Thêm tiết học</button>
       <button class="add-row-btn" style="border-color:rgba(253,203,110,.5);color:rgba(160,115,0,.65);" onclick="addBreak()">☕ Thêm giờ nghỉ</button>
       <button class="add-row-btn" style="border-color:rgba(29,209,161,.5);color:rgba(0,120,90,.65);" onclick="addDay()">➕ Thêm cột ngày</button>
-    </div>
+    </div> -->
   </div>
 
   <!-- FOOTER -->
   <div class="rainbow-bar" style="margin-top:3mm;margin-bottom:2mm;"></div>
   <div class="footer">
     <div class="footer-note">
-      📌 <strong>Ghi chú:</strong> Thời khóa biểu có thể thay đổi theo lịch nhà trường.<br>
-      📞 Liên hệ giáo viên nếu có thắc mắc.<br>
-      <span style="color:#ccc;font-size:6.5pt">Năm học 2024–2025 · Tiếng Anh Mầm non &amp; Tiểu học</span>
+      📌 <strong>Ghi chú:</strong> Thời khóa biểu có thể thay đổi theo lịch nhà trường 8A, LÔ 30A, Lê Hông Phong, Hải Phòng.<br>
+      📞 Liên hệ 0901 965 966 nếu có thắc mắc.<br>
+      <span style="color:#9c9b9b;font-size:pt">Năm học 2026 · Tiếng Anh Mầm non &amp; Tiểu học</span>
     </div>
     <div class="footer-cheer">
       <div class="cheer-text">🌟 Học tiếng Anh mỗi ngày 🌟</div>
@@ -413,7 +419,7 @@ td.activity:hover .edit-icon{opacity:.5;}
   </div>
 </div>
 
-<script>
+<script >
 // ═══════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════

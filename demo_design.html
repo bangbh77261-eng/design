@@ -1,0 +1,769 @@
+cat > /mnt/user-data/outputs/thoikhoabieu_tiengAnh.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thời Khóa Biểu Tiếng Anh</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* ── TOOLBAR ── */
+.toolbar{
+  position:fixed;top:0;left:0;right:0;height:54px;
+  background:linear-gradient(135deg,#1e1e2e,#2d2d44);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;z-index:9000;
+  box-shadow:0 2px 16px rgba(0,0,0,.45);
+  gap:10px;
+}
+.toolbar-brand{
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:14pt;
+  color:white;white-space:nowrap;
+}
+.toolbar-actions{display:flex;gap:5px;flex-wrap:wrap;}
+.tbtn{
+  padding:6px 11px;border:none;border-radius:8px;
+  font-family:'Nunito',sans-serif;font-size:8.5pt;font-weight:800;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.tbtn:hover{transform:translateY(-1px);filter:brightness(1.15);}
+.tbtn:active{transform:translateY(0);}
+.tbtn-blue{background:#54A0FF;color:#fff;}
+.tbtn-green{background:#1DD1A1;color:#fff;}
+.tbtn-yellow{background:#FDCB6E;color:#333;}
+.tbtn-red{background:#FF7675;color:#fff;}
+.tbtn-purple{background:#A29BFE;color:#fff;}
+.tbtn-teal{background:#00CEC9;color:#fff;}
+.tbtn-print{background:#55EFC4;color:#1a1a1a;}
+
+/* ── BODY / WRAPPER ── */
+body{
+  background:#2d2d44;
+  padding-top:66px;
+  min-height:100vh;
+  font-family:'Nunito',sans-serif;
+}
+.page-wrapper{display:flex;justify-content:center;padding:16px 20px 30px;}
+
+/* ── A4 PAGE ── */
+.page{
+  width:210mm;
+  background:#FFFBF0;
+  border-radius:10px;
+  padding:6mm 7mm 5mm;
+  position:relative;overflow:hidden;
+  box-shadow:0 12px 50px rgba(0,0,0,.5);
+}
+.page::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:
+    radial-gradient(circle,rgba(255,180,100,.11) 1px,transparent 1px),
+    radial-gradient(circle,rgba(100,180,255,.09) 1px,transparent 1px);
+  background-size:20px 20px,36px 36px;background-position:0 0,10px 10px;
+}
+
+/* ── RAINBOW BAR ── */
+.rainbow-bar{
+  height:6px;border-radius:3px;
+  background:linear-gradient(90deg,#FF6B6B,#FF9F43,#FECA57,#48DBFB,#1DD1A1,#54A0FF,#FF9FF3);
+  position:relative;z-index:1;
+}
+
+/* ── HEADER ── */
+.header{text-align:center;position:relative;z-index:1;margin:3.5mm 0;}
+.header-inner{
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border-radius:14px;padding:5mm 6mm 4mm;overflow:hidden;
+}
+.school-name{
+  color:rgba(255,255,255,.82);font-size:10pt;font-weight:700;
+  letter-spacing:1px;margin-bottom:2mm;cursor:pointer;
+}
+.school-name:hover{text-decoration:underline dotted rgba(255,255,255,.5);}
+.main-title{
+  font-family:'Baloo 2',sans-serif;font-size:26pt;font-weight:800;
+  color:#fff;line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,.2);margin-bottom:1.5mm;
+}
+.subtitle{
+  color:rgba(255,255,255,.9);font-size:11pt;font-weight:600;cursor:pointer;
+}
+.subtitle:hover{text-decoration:underline dotted rgba(255,255,255,.5);}
+
+/* ── TABLE ── */
+.schedule-wrap{position:relative;z-index:1;margin:3mm 0 2mm;}
+table{width:100%;border-collapse:separate;border-spacing:2.5px;table-layout:fixed;}
+
+/* Header row */
+th{
+  padding:5px 3px;font-family:'Baloo 2',sans-serif;
+  font-size:11pt;font-weight:800;text-align:center;border-radius:9px;
+}
+.th-time{
+  background:linear-gradient(135deg,#2d3436,#636e72);
+  color:#fff;width:12%;
+}
+.th-day{
+  color:#fff;cursor:pointer;position:relative;
+  transition:filter .2s;
+}
+.th-day:hover{filter:brightness(1.12);}
+.day-vn{font-size:9pt;font-weight:700;opacity:.88;display:block;}
+.day-en{font-size:11pt;display:block;}
+
+.del-day-btn{
+  position:absolute;top:3px;right:3px;
+  width:17px;height:17px;background:rgba(255,255,255,.25);
+  border:none;border-radius:50%;color:#fff;font-size:9pt;
+  cursor:pointer;line-height:17px;text-align:center;
+  display:none;padding:0;font-weight:700;
+  transition:background .15s;
+}
+.th-day:hover .del-day-btn{display:block;}
+.del-day-btn:hover{background:rgba(220,50,50,.6);}
+
+/* Time cell */
+.td-time{
+  background:linear-gradient(135deg,#2d3436,#636e72);
+  color:#fff;text-align:center;border-radius:9px;
+  padding:4px 3px;vertical-align:middle;
+  cursor:pointer;transition:filter .2s;position:relative;
+}
+.td-time:hover{filter:brightness(1.2);}
+.time-session{font-size:7.5pt;font-weight:800;opacity:.72;display:block;letter-spacing:.3px;}
+.time-clock{font-size:9.5pt;font-weight:700;display:block;}
+
+.del-row-btn{
+  position:absolute;bottom:3px;right:3px;
+  width:15px;height:15px;background:rgba(255,100,100,.25);
+  border:none;border-radius:50%;color:#fff;font-size:8pt;
+  cursor:pointer;line-height:15px;text-align:center;
+  display:none;padding:0;font-weight:700;
+}
+.td-time:hover .del-row-btn{display:block;}
+.del-row-btn:hover{background:rgba(220,30,30,.6);}
+
+/* Activity cell */
+td.activity{
+  border-radius:10px;padding:0;
+  text-align:center;vertical-align:middle;
+  cursor:pointer;position:relative;
+  background:#F6F6FF;border:2px dashed #D4D4EE;
+  transition:all .15s;
+}
+td.activity:hover{border-color:#8e44ad;border-style:solid;transform:scale(1.02);z-index:2;}
+td.activity.has-content{border-style:solid;}
+
+.cell-inner{
+  padding:7px 5px;width:100%;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  min-height:64px;
+}
+.cell-emoji{font-size:18pt;line-height:1;display:block;}
+.cell-l1{font-family:'Baloo 2',sans-serif;font-size:9pt;font-weight:800;line-height:1.2;}
+.cell-l2{font-size:7.5pt;font-weight:600;color:#999;line-height:1.2;}
+.cell-empty-dots{display:flex;gap:4px;justify-content:center;opacity:.3;}
+.cell-empty-dots span{width:5px;height:5px;background:#AAA;border-radius:50%;display:block;}
+
+.edit-icon{position:absolute;top:4px;right:4px;font-size:9pt;opacity:0;transition:opacity .15s;}
+td.activity:hover .edit-icon{opacity:.5;}
+
+/* Break row */
+.break-row td{padding:1px 0;}
+.break-cell{
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.5),rgba(255,255,255,.5) 4px,rgba(200,200,200,.15) 4px,rgba(200,200,200,.15) 8px);
+  border:1.5px dashed rgba(140,140,140,.35);
+  border-radius:8px;text-align:center;
+  font-size:8.5pt;font-weight:700;color:#999;
+  padding:5px 0;cursor:pointer;
+}
+.break-cell:hover{border-color:#aaa;color:#666;}
+
+/* Add-row buttons */
+.add-row-area{display:flex;gap:5px;margin-top:4px;}
+.add-row-btn{
+  flex:1;padding:5px;
+  background:rgba(102,126,234,.08);
+  border:1.5px dashed rgba(102,126,234,.35);
+  border-radius:8px;color:rgba(100,120,210,.65);
+  font-family:'Nunito',sans-serif;font-size:8.5pt;font-weight:700;
+  cursor:pointer;transition:all .15s;
+}
+.add-row-btn:hover{background:rgba(102,126,234,.18);border-color:rgba(102,126,234,.7);color:#667eea;}
+
+/* Footer */
+.footer{
+  position:relative;z-index:1;
+  display:flex;justify-content:space-between;align-items:flex-end;gap:3mm;
+  margin-top:2mm;
+}
+.footer-note{font-size:7.5pt;color:#aaa;font-weight:600;flex:1;}
+.footer-cheer{text-align:center;flex:1;}
+.cheer-text{font-family:'Baloo 2',sans-serif;font-size:10pt;font-weight:800;color:#764ba2;}
+.footer-mascot{text-align:right;font-size:22pt;line-height:1.2;}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  z-index:9999;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{
+  background:#fff;border-radius:18px;padding:24px;
+  width:440px;max-width:92vw;
+  box-shadow:0 24px 70px rgba(0,0,0,.35);
+  transform:translateY(24px);transition:transform .22s;
+}
+.modal-overlay.open .modal-box{transform:translateY(0);}
+.modal-title{
+  font-family:'Baloo 2',sans-serif;font-size:14pt;font-weight:800;
+  color:#333;margin-bottom:14px;
+}
+.field-label{font-size:8.5pt;font-weight:700;color:#888;margin:12px 0 5px;text-transform:uppercase;letter-spacing:.5px;}
+.modal-input,.modal-ta{
+  width:100%;padding:9px 12px;
+  border:1.5px solid #e0e0e0;border-radius:9px;
+  font-family:'Nunito',sans-serif;font-size:10pt;font-weight:600;color:#333;
+  outline:none;transition:border-color .2s;
+  background:#fafafa;
+}
+.modal-input:focus,.modal-ta:focus{border-color:#764ba2;background:#fff;}
+.modal-ta{height:66px;resize:none;}
+
+.emoji-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.em-btn{
+  font-size:15pt;background:#f5f5f5;border:1.5px solid transparent;
+  border-radius:8px;width:36px;height:36px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.em-btn:hover{background:#ede0ff;border-color:#a29bfe;transform:scale(1.1);}
+.em-btn.sel{background:#e0d0ff;border-color:#764ba2;}
+
+.swatches{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px;}
+.swatch{
+  width:26px;height:26px;border-radius:50%;cursor:pointer;
+  border:2px solid transparent;transition:transform .15s,border-color .15s;
+}
+.swatch:hover{transform:scale(1.25);}
+.swatch.sel{border-color:#222 !important;transform:scale(1.18);}
+
+.modal-actions{display:flex;gap:8px;margin-top:18px;}
+.mbtn-save{
+  flex:1;padding:10px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;
+  font-family:'Baloo 2',sans-serif;font-size:11pt;font-weight:700;
+  cursor:pointer;transition:filter .15s;
+}
+.mbtn-save:hover{filter:brightness(1.1);}
+.mbtn-cancel{
+  padding:10px 14px;border:none;border-radius:10px;
+  background:#f0f0f0;color:#888;
+  font-family:'Nunito',sans-serif;font-size:10pt;font-weight:700;cursor:pointer;
+}
+.mbtn-cancel:hover{background:#e5e5e5;}
+.mbtn-clear{
+  padding:10px 12px;border:none;border-radius:10px;
+  background:#ffe0e0;color:#c0392b;
+  font-family:'Nunito',sans-serif;font-size:10pt;font-weight:700;cursor:pointer;
+}
+.mbtn-clear:hover{background:#ffc8c8;}
+
+/* ── PRINT ── */
+@media print{
+  body{background:#fff;padding-top:0;}
+  .toolbar,.no-print{display:none!important;}
+  .page-wrapper{padding:0;}
+  .page{box-shadow:none;border-radius:0;}
+  .modal-overlay{display:none!important;}
+  @page{size:A4 portrait;margin:0;}
+  td.activity:hover{transform:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOOLBAR ═══ -->
+<div class="toolbar">
+  <div class="toolbar-brand">🎓 Thời Khóa Biểu</div>
+  <div class="toolbar-actions">
+    <button class="tbtn tbtn-blue" onclick="addDay()">➕ Thêm ngày</button>
+    <button class="tbtn tbtn-green" onclick="addSession()">➕ Thêm tiết</button>
+    <button class="tbtn tbtn-yellow" onclick="addBreak()">☕ Thêm giờ nghỉ</button>
+    <button class="tbtn tbtn-red" onclick="removeLastRow()">➖ Xóa hàng cuối</button>
+    <button class="tbtn tbtn-purple" onclick="resetAll()">🔄 Đặt lại</button>
+    <button class="tbtn tbtn-print" onclick="window.print()">🖨️ In / PDF</button>
+  </div>
+</div>
+
+<!-- ═══ A4 PAGE ═══ -->
+<div class="page-wrapper">
+<div class="page" id="mainPage">
+
+  <svg style="position:absolute;top:9mm;left:4mm;z-index:0;pointer-events:none" width="38" height="38" viewBox="0 0 38 38">
+    <circle cx="7" cy="7" r="6" fill="#FF6B6B" opacity=".2"/>
+    <circle cx="21" cy="5" r="3.5" fill="#FECA57" opacity=".25"/>
+    <text x="8" y="28" font-size="13">🌈</text>
+  </svg>
+  <svg style="position:absolute;top:9mm;right:4mm;z-index:0;pointer-events:none" width="38" height="38" viewBox="0 0 38 38">
+    <circle cx="31" cy="7" r="6" fill="#A29BFE" opacity=".2"/>
+    <text x="2" y="28" font-size="13">⭐</text>
+  </svg>
+
+  <div class="rainbow-bar"></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="school-name" id="hSchool" onclick="editHeader('hSchool','Tên trường / Năm học')" title="Nhấn để sửa">
+        ✨ Năm học 2024 – 2025 ✨
+      </div>
+      <div class="main-title">🎓 THỜI KHÓA BIỂU TIẾNG ANH 🎓</div>
+      <div class="subtitle" id="hSub" onclick="editHeader('hSub','Phụ đề')" title="Nhấn để sửa">
+        Dành cho học sinh Mầm non &amp; Tiểu học
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="schedule-wrap">
+    <div id="tbl"></div>
+    <div class="add-row-area no-print">
+      <button class="add-row-btn" onclick="addSession()">➕ Thêm tiết học</button>
+      <button class="add-row-btn" style="border-color:rgba(253,203,110,.5);color:rgba(160,115,0,.65);" onclick="addBreak()">☕ Thêm giờ nghỉ</button>
+      <button class="add-row-btn" style="border-color:rgba(29,209,161,.5);color:rgba(0,120,90,.65);" onclick="addDay()">➕ Thêm cột ngày</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="rainbow-bar" style="margin-top:3mm;margin-bottom:2mm;"></div>
+  <div class="footer">
+    <div class="footer-note">
+      📌 <strong>Ghi chú:</strong> Thời khóa biểu có thể thay đổi theo lịch nhà trường.<br>
+      📞 Liên hệ giáo viên nếu có thắc mắc.<br>
+      <span style="color:#ccc;font-size:6.5pt">Năm học 2024–2025 · Tiếng Anh Mầm non &amp; Tiểu học</span>
+    </div>
+    <div class="footer-cheer">
+      <div class="cheer-text">🌟 Học tiếng Anh mỗi ngày 🌟</div>
+      <div style="font-size:9pt;font-weight:700;color:#FF6B6B;margin-top:1mm">"Learning is Fun!" 🚀</div>
+      <div style="font-size:12pt">⭐ ⭐ ⭐ ⭐ ⭐</div>
+    </div>
+    <div class="footer-mascot">🦉📚🍎<br>
+      <span style="font-size:9pt;font-weight:800;color:#764ba2;font-family:'Baloo 2',sans-serif">Let's Learn!</span>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══ CELL MODAL ═══ -->
+<div class="modal-overlay" id="mCell">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Chỉnh sửa ô nội dung</div>
+    <div class="field-label">🎯 Chọn Emoji</div>
+    <div class="emoji-grid" id="mEmojiGrid"></div>
+    <div class="field-label">📝 Dòng 1 — Tiếng Anh</div>
+    <input class="modal-input" id="mL1" placeholder="VD: Phonics, Songs & Rhymes, Storytelling...">
+    <div class="field-label">📝 Dòng 2 — Tiếng Việt</div>
+    <input class="modal-input" id="mL2" placeholder="VD: Phát âm chữ cái, Bài hát vui nhộn...">
+    <div class="field-label">🎨 Màu nền ô</div>
+    <div class="swatches" id="mColorSwatches"></div>
+    <div class="modal-actions">
+      <button class="mbtn-clear" onclick="clearCellData()">🗑️ Xóa</button>
+      <button class="mbtn-cancel" onclick="closeM('mCell')">Hủy</button>
+      <button class="mbtn-save" onclick="saveCell()">💾 Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DAY MODAL ═══ -->
+<div class="modal-overlay" id="mDay">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Chỉnh sửa ngày học</div>
+    <div class="field-label">Tên Tiếng Việt</div>
+    <input class="modal-input" id="dVn" placeholder="VD: Thứ Hai, Thứ Ba...">
+    <div class="field-label">Tên Tiếng Anh</div>
+    <input class="modal-input" id="dEn" placeholder="VD: Monday, Tuesday...">
+    <div class="field-label">🎨 Màu tiêu đề ngày</div>
+    <div class="swatches" id="dColorSwatches"></div>
+    <div class="modal-actions">
+      <button class="mbtn-cancel" onclick="closeM('mDay')">Hủy</button>
+      <button class="mbtn-save" onclick="saveDay()">💾 Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SESSION MODAL ═══ -->
+<div class="modal-overlay" id="mSess">
+  <div class="modal-box">
+    <div class="modal-title">⏰ Chỉnh sửa tiết / giờ nghỉ</div>
+    <div class="field-label">Tên tiết</div>
+    <input class="modal-input" id="sLabel" placeholder="VD: TIẾT 1, GIẢI LAO, NGHỈ TRƯA...">
+    <div class="field-label">Thời gian</div>
+    <input class="modal-input" id="sTime" placeholder="VD: 7:30–8:15">
+    <div id="sBreakField" style="display:none">
+      <div class="field-label">Nội dung giờ nghỉ</div>
+      <input class="modal-input" id="sBreakText" placeholder="VD: ☕ Break Time · Ăn nhẹ vui chơi">
+    </div>
+    <div class="modal-actions">
+      <button class="mbtn-cancel" onclick="closeM('mSess')">Hủy</button>
+      <button class="mbtn-save" onclick="saveSess()">💾 Lưu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════
+const DAY_GRADIENTS = [
+  'linear-gradient(135deg,#FF6B6B,#ee5a24)',
+  'linear-gradient(135deg,#FF9F43,#e67e22)',
+  'linear-gradient(135deg,#1DD1A1,#10ac84)',
+  'linear-gradient(135deg,#54A0FF,#2980b9)',
+  'linear-gradient(135deg,#A29BFE,#8e44ad)',
+  'linear-gradient(135deg,#ff6b81,#c44569)',
+  'linear-gradient(135deg,#fdd835,#f9a825)',
+  'linear-gradient(135deg,#0abde3,#006699)',
+];
+const DAY_SWATCH_COLORS = [
+  '#FF6B6B','#FF9F43','#1DD1A1','#54A0FF',
+  '#A29BFE','#ff6b81','#fdd835','#0abde3',
+];
+
+const CELL_COLORS = [
+  {bg:'#F6F6FF',bd:'#D0D0EE',tx:'#555'},   // 0 blank
+  {bg:'#FFE0E0',bd:'#FFB3B3',tx:'#C0392B'}, // 1 red
+  {bg:'#FFE8FA',bd:'#FFB3F0',tx:'#8e44ad'}, // 2 pink
+  {bg:'#E0F0FF',bd:'#B3D4FF',tx:'#1565C0'}, // 3 blue
+  {bg:'#EDE0FF',bd:'#C9B3FF',tx:'#5E35B1'}, // 4 purple
+  {bg:'#FFF8E0',bd:'#FFE4A0',tx:'#B8621A'}, // 5 yellow
+  {bg:'#E0FFF5',bd:'#A0FFD6',tx:'#00695C'}, // 6 green
+  {bg:'#E8E0FF',bd:'#C0B0FF',tx:'#4A148C'}, // 7 violet
+  {bg:'#FFE8E0',bd:'#FFBFAA',tx:'#BF360C'}, // 8 orange
+  {bg:'#E0FFFE',bd:'#A0F0EE',tx:'#006064'}, // 9 teal
+  {bg:'#FFFDE0',bd:'#FFFAAA',tx:'#827717'}, // 10 lime
+];
+const CELL_SWATCH_BG = CELL_COLORS.map(c=>c.bg);
+
+const EMOJIS=['🍎','🎵','📚','📖','🎮','🎨','✏️','🗣️','👂','⭐',
+  '🌟','🏆','🎭','🌈','🦋','🐝','🎪','🎯','💡','🔤',
+  '🎶','📝','🖍️','🐣','🎠','🦄','🍀','🔔','💬','🌸'];
+
+// ═══════════════════════════════════════════════
+// DEFAULT SCHEDULE DATA
+// ═══════════════════════════════════════════════
+const DEFAULT = {
+  days:[
+    {vn:'Thứ Hai', en:'Monday',    ci:0},
+    {vn:'Thứ Ba',  en:'Tuesday',   ci:1},
+    {vn:'Thứ Tư',  en:'Wednesday', ci:2},
+    {vn:'Thứ Năm', en:'Thursday',  ci:3},
+    {vn:'Thứ Sáu', en:'Friday',    ci:4},
+  ],
+  rows:[
+    {type:'session',label:'TIẾT 1',time:'7:30–8:15',
+     cells:[0,0,0,0,0].map(()=>({e:'',l1:'',l2:'',c:0}))},
+    {type:'break',label:'GIẢI LAO',time:'8:15–8:30',
+     text:'☕ Giờ giải lao · Break Time · 🍪 Ăn nhẹ & vui chơi tự do'},
+    {type:'session',label:'TIẾT 2',time:'8:30–9:15',
+     cells:[0,0,0,0,0].map(()=>({e:'',l1:'',l2:'',c:0}))},
+    {type:'session',label:'TIẾT 3',time:'9:20–10:05',
+     cells:[0,0,0,0,0].map(()=>({e:'',l1:'',l2:'',c:0}))},
+    {type:'break',label:'NGHỈ TRƯA',time:'11:00–13:30',
+     text:'🍱 Giờ ăn trưa & nghỉ ngơi · Lunch & Rest Time · 😴 Ngủ trưa'},
+    {type:'session',label:'TIẾT 4',time:'13:30–14:15',
+     cells:[0,0,0,0,0].map(()=>({e:'',l1:'',l2:'',c:0}))},
+    {type:'session',label:'TIẾT 5',time:'14:20–15:00',
+     cells:[0,0,0,0,0].map(()=>({e:'',l1:'',l2:'',c:0}))},
+  ]
+};
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let S = JSON.parse(JSON.stringify(DEFAULT)); // deep clone
+let editCell=null, editDay=null, editRow=null;
+let selColor=0, selEmoji='', selDayColor=0;
+
+// ═══════════════════════════════════════════════
+// PERSIST
+// ═══════════════════════════════════════════════
+function persist(){try{localStorage.setItem('tkb',JSON.stringify(S));}catch(e){}}
+function hydrate(){
+  try{
+    const d=localStorage.getItem('tkb');
+    if(d) S=JSON.parse(d);
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function render(){
+  const nD=S.days.length;
+  let h='<table><thead><tr>';
+  h+=`<th class="th-time" style="width:12%">⏰<br><span style="font-size:8pt">Giờ học</span></th>`;
+
+  S.days.forEach((d,di)=>{
+    h+=`<th class="th-day" style="background:${DAY_GRADIENTS[d.ci%8]}" onclick="openDayM(${di})">
+      <span class="day-vn">${esc(d.vn)}</span>
+      <span class="day-en">${esc(d.en)}</span>
+      <button class="del-day-btn no-print" onclick="event.stopPropagation();delDay(${di})" title="Xóa ngày này">✕</button>
+    </th>`;
+  });
+  h+='</tr></thead><tbody>';
+
+  S.rows.forEach((row,ri)=>{
+    if(row.type==='break'){
+      h+=`<tr class="break-row">
+        <td class="td-time" onclick="openSessM(${ri})" style="padding:3px;">
+          <span class="time-session" style="font-size:7pt">${esc(row.label)}</span>
+          <span class="time-clock" style="font-size:8pt">${esc(row.time)}</span>
+          <button class="del-row-btn no-print" onclick="event.stopPropagation();delRow(${ri})">✕</button>
+        </td>
+        <td colspan="${nD}" class="break-cell" onclick="openSessM(${ri})">${esc(row.text)}</td>
+      </tr>`;
+    } else {
+      h+=`<tr>
+        <td class="td-time" onclick="openSessM(${ri})">
+          <span class="time-session">${esc(row.label)}</span>
+          <span class="time-clock">${esc(row.time)}</span>
+          <button class="del-row-btn no-print" onclick="event.stopPropagation();delRow(${ri})">✕</button>
+        </td>`;
+      (row.cells||[]).forEach((cell,di)=>{
+        const cc=CELL_COLORS[cell.c||0];
+        const hasContent=cell.l1||cell.l2||cell.e;
+        const bStyle=hasContent
+          ?`background:${cc.bg};border-color:${cc.bd};border-style:solid;`
+          :'';
+        h+=`<td class="activity${hasContent?' has-content':''}" style="${bStyle}" onclick="openCellM(${ri},${di})">
+          <span class="edit-icon no-print">✏️</span>
+          <div class="cell-inner">
+            ${hasContent
+              ?`${cell.e?`<span class="cell-emoji">${cell.e}</span>`:''}
+                ${cell.l1?`<span class="cell-l1" style="color:${cc.tx}">${esc(cell.l1)}</span>`:''}
+                ${cell.l2?`<span class="cell-l2">${esc(cell.l2)}</span>`:''}`
+              :`<div class="cell-empty-dots"><span></span><span></span><span></span></div>`
+            }
+          </div>
+        </td>`;
+      });
+      h+='</tr>';
+    }
+  });
+  h+='</tbody></table>';
+  document.getElementById('tbl').innerHTML=h;
+}
+
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ═══════════════════════════════════════════════
+// ADD / REMOVE DAYS
+// ═══════════════════════════════════════════════
+const NEXT_DAYS=[
+  {vn:'Thứ Hai',en:'Monday',ci:0},{vn:'Thứ Ba',en:'Tuesday',ci:1},
+  {vn:'Thứ Tư',en:'Wednesday',ci:2},{vn:'Thứ Năm',en:'Thursday',ci:3},
+  {vn:'Thứ Sáu',en:'Friday',ci:4},{vn:'Thứ Bảy',en:'Saturday',ci:5},
+  {vn:'Chủ Nhật',en:'Sunday',ci:6},
+];
+function addDay(){
+  if(S.days.length>=7){alert('Đã đủ 7 ngày trong tuần!');return;}
+  const n=S.days.length;
+  S.days.push({...NEXT_DAYS[n]||{vn:'Ngày '+(n+1),en:'Day '+(n+1),ci:n%8}});
+  S.rows.forEach(r=>{if(r.type==='session')r.cells.push({e:'',l1:'',l2:'',c:0});});
+  persist();render();
+}
+function delDay(di){
+  if(S.days.length<=1){alert('Cần ít nhất 1 ngày!');return;}
+  if(!confirm(`Xóa "${S.days[di].vn}"? Dữ liệu sẽ mất.`))return;
+  S.days.splice(di,1);
+  S.rows.forEach(r=>{if(r.type==='session')r.cells.splice(di,1);});
+  persist();render();
+}
+
+// ═══════════════════════════════════════════════
+// ADD / REMOVE ROWS
+// ═══════════════════════════════════════════════
+function mkCells(){return S.days.map(()=>({e:'',l1:'',l2:'',c:0}));}
+function addSession(){
+  const n=S.rows.filter(r=>r.type==='session').length;
+  S.rows.push({type:'session',label:'TIẾT '+(n+1),time:'...',cells:mkCells()});
+  persist();render();
+}
+function addBreak(){
+  S.rows.push({type:'break',label:'GIẢI LAO',time:'...',text:'☕ Break Time'});
+  persist();render();
+}
+function delRow(ri){
+  if(S.rows.length<=1){alert('Cần ít nhất 1 hàng!');return;}
+  if(!confirm('Xóa hàng này? Dữ liệu sẽ mất.'))return;
+  S.rows.splice(ri,1);persist();render();
+}
+function removeLastRow(){
+  if(S.rows.length<=1){alert('Cần ít nhất 1 hàng!');return;}
+  S.rows.pop();persist();render();
+}
+
+// ═══════════════════════════════════════════════
+// CELL MODAL
+// ═══════════════════════════════════════════════
+function buildEmojiGrid(){
+  const g=document.getElementById('mEmojiGrid');
+  g.innerHTML=EMOJIS.map(em=>
+    `<button class="em-btn${em===selEmoji?' sel':''}" onclick="pickEmoji('${em}',this)">${em}</button>`
+  ).join('')+`<button class="em-btn${selEmoji===''?' sel':''}" onclick="pickEmoji('',this)" title="Không emoji" style="font-size:10pt;color:#aaa">–</button>`;
+}
+function buildCellSwatches(){
+  const s=document.getElementById('mColorSwatches');
+  s.innerHTML=CELL_COLORS.map((cc,i)=>
+    `<div class="swatch${i===selColor?' sel':''}"
+      style="background:${cc.bg};border-color:${i===0?'#BBB':cc.bd}"
+      onclick="pickColor(${i},this,'mColorSwatches')"></div>`
+  ).join('');
+}
+function buildDaySwatches(){
+  const s=document.getElementById('dColorSwatches');
+  s.innerHTML=DAY_SWATCH_COLORS.map((c,i)=>
+    `<div class="swatch${i===selDayColor?' sel':''}" style="background:${c}"
+      onclick="pickDayColor(${i},this)"></div>`
+  ).join('');
+}
+
+function pickEmoji(em,btn){
+  selEmoji=em;
+  document.querySelectorAll('#mEmojiGrid .em-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+function pickColor(i,el,containerId){
+  selColor=i;
+  document.querySelectorAll('#'+containerId+' .swatch').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function pickDayColor(i,el){
+  selDayColor=i;
+  document.querySelectorAll('#dColorSwatches .swatch').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function openCellM(ri,di){
+  editCell={ri,di};
+  const cell=S.rows[ri].cells[di];
+  selEmoji=cell.e||''; selColor=cell.c||0;
+  document.getElementById('mL1').value=cell.l1||'';
+  document.getElementById('mL2').value=cell.l2||'';
+  buildEmojiGrid(); buildCellSwatches();
+  openM('mCell');
+}
+function saveCell(){
+  if(!editCell)return;
+  const {ri,di}=editCell;
+  S.rows[ri].cells[di]={
+    e:selEmoji,
+    l1:document.getElementById('mL1').value.trim(),
+    l2:document.getElementById('mL2').value.trim(),
+    c:selColor
+  };
+  persist();render();closeM('mCell');
+}
+function clearCellData(){
+  if(!editCell)return;
+  const {ri,di}=editCell;
+  S.rows[ri].cells[di]={e:'',l1:'',l2:'',c:0};
+  persist();render();closeM('mCell');
+}
+
+// ═══════════════════════════════════════════════
+// DAY MODAL
+// ═══════════════════════════════════════════════
+function openDayM(di){
+  editDay=di; selDayColor=S.days[di].ci||0;
+  document.getElementById('dVn').value=S.days[di].vn;
+  document.getElementById('dEn').value=S.days[di].en;
+  buildDaySwatches();openM('mDay');
+}
+function saveDay(){
+  if(editDay===null)return;
+  const vn=document.getElementById('dVn').value.trim();
+  const en=document.getElementById('dEn').value.trim();
+  if(vn) S.days[editDay].vn=vn;
+  if(en) S.days[editDay].en=en;
+  S.days[editDay].ci=selDayColor;
+  persist();render();closeM('mDay');
+}
+
+// ═══════════════════════════════════════════════
+// SESSION MODAL
+// ═══════════════════════════════════════════════
+function openSessM(ri){
+  editRow=ri;
+  const row=S.rows[ri];
+  document.getElementById('sLabel').value=row.label||'';
+  document.getElementById('sTime').value=row.time||'';
+  const bf=document.getElementById('sBreakField');
+  if(row.type==='break'){bf.style.display='block';document.getElementById('sBreakText').value=row.text||'';}
+  else bf.style.display='none';
+  openM('mSess');
+}
+function saveSess(){
+  if(editRow===null)return;
+  const row=S.rows[editRow];
+  const label=document.getElementById('sLabel').value.trim();
+  const time=document.getElementById('sTime').value.trim();
+  if(label) row.label=label;
+  if(time)  row.time=time;
+  if(row.type==='break'){
+    const bt=document.getElementById('sBreakText').value.trim();
+    if(bt) row.text=bt;
+  }
+  persist();render();closeM('mSess');
+}
+
+// ═══════════════════════════════════════════════
+// HEADER EDIT
+// ═══════════════════════════════════════════════
+function editHeader(id,label){
+  const el=document.getElementById(id);
+  const val=prompt('✏️ Sửa '+label+':',el.textContent.trim());
+  if(val!==null&&val.trim()) el.textContent=val.trim();
+}
+
+// ═══════════════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════════════
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
+});
+
+// ═══════════════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════════════
+function resetAll(){
+  if(!confirm('Đặt lại toàn bộ về mặc định? Dữ liệu sẽ xóa hết.'))return;
+  try{localStorage.removeItem('tkb');}catch(e){}
+  location.reload();
+}
+
+// ═══════════════════════════════════════════════
+// KEYBOARD SHORTCUT
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(o=>o.classList.remove('open'));
+});
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+hydrate();
+render();
+</script>
+</body>
+</html>
+HTMLEOF
+echo "Done"

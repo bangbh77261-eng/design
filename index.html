@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Event Background – A4 Ngang</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;min-height:100vh;background:#0a0a0a;display:flex;justify-content:center;align-items:center;padding:24px}
+.a4{width:1123px;height:794px;flex-shrink:0;box-shadow:0 8px 60px rgba(0,0,0,.9)}
+@media print{html,body{background:white;padding:0;display:block}
+.a4{width:297mm;height:210mm;box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="a4">
+<svg width="1123" height="794" viewBox="0 0 1123 794" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="bg" cx="50%" cy="48%" r="62%">
+    <stop offset="0%" stop-color="#0F2242"/>
+    <stop offset="55%" stop-color="#070F25"/>
+    <stop offset="100%" stop-color="#020710"/>
+  </radialGradient>
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.08"/>
+    <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="gh" x1="0" y1="0" x2="1123" y2="0" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#3D2A06"/>
+    <stop offset="18%" stop-color="#C9A84C"/>
+    <stop offset="50%" stop-color="#F5E08A"/>
+    <stop offset="82%" stop-color="#C9A84C"/>
+    <stop offset="100%" stop-color="#3D2A06"/>
+  </linearGradient>
+  <linearGradient id="gv" x1="0" y1="0" x2="0" y2="794" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#3D2A06"/>
+    <stop offset="20%" stop-color="#C9A84C"/>
+    <stop offset="50%" stop-color="#F5E08A"/>
+    <stop offset="80%" stop-color="#C9A84C"/>
+    <stop offset="100%" stop-color="#3D2A06"/>
+  </linearGradient>
+  <pattern id="dp" width="28" height="28" patternUnits="userSpaceOnUse">
+    <path d="M14 1L27 14L14 27L1 14Z" fill="none" stroke="#C9A84C" stroke-width="0.5" opacity="0.18"/>
+  </pattern>
+  <pattern id="tiny" width="55" height="55" patternUnits="userSpaceOnUse">
+    <circle cx="27.5" cy="27.5" r="0.8" fill="#C9A84C" opacity="0.45"/>
+    <circle cx="0" cy="0" r="0.5" fill="#F5E08A" opacity="0.25"/>
+    <circle cx="55" cy="55" r="0.5" fill="#F5E08A" opacity="0.25"/>
+  </pattern>
+  <linearGradient id="bandtop" x1="0" y1="22" x2="0" y2="130" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#020710"/>
+    <stop offset="100%" stop-color="#08152E" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="bandbot" x1="0" y1="664" x2="0" y2="772" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#08152E" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#020710"/>
+  </linearGradient>
+</defs>
+
+<!-- ── BASE ── -->
+<rect width="1123" height="794" fill="url(#bg)"/>
+<rect width="1123" height="794" fill="url(#tiny)" opacity="0.9"/>
+<rect width="1123" height="794" fill="url(#glow)"/>
+
+<!-- ── OUTER FRAME ── -->
+<rect x="22" y="22" width="1079" height="750" fill="none" stroke="url(#gh)" stroke-width="2"/>
+<rect x="22" y="22" width="1079" height="750" fill="none" stroke="url(#gv)" stroke-width="2" opacity="0.6"/>
+
+<!-- Inner thin frames -->
+<rect x="34" y="34" width="1055" height="726" fill="none" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+<rect x="40" y="40" width="1043" height="714" fill="none" stroke="#C9A84C" stroke-width="0.3" opacity="0.3"/>
+
+<!-- ── TOP BAND ── -->
+<rect x="22" y="22" width="1079" height="108" fill="url(#dp)" opacity="0.9"/>
+<rect x="22" y="22" width="1079" height="108" fill="url(#bandtop)"/>
+<rect x="22" y="130" width="1079" height="2" fill="url(#gh)"/>
+<rect x="34" y="136" width="1055" height="0.7" fill="#C9A84C" opacity="0.4"/>
+
+<!-- ── BOTTOM BAND ── -->
+<rect x="22" y="664" width="1079" height="108" fill="url(#dp)" opacity="0.9"/>
+<rect x="22" y="664" width="1079" height="108" fill="url(#bandbot)"/>
+<rect x="22" y="662" width="1079" height="2" fill="url(#gh)"/>
+<rect x="34" y="657" width="1055" height="0.7" fill="#C9A84C" opacity="0.4"/>
+
+<!-- ════════════════════════════════
+     CORNER ORNAMENTS
+     Corners at TL(22,22) TR(1101,22) BL(22,772) BR(1101,772)
+     ════════════════════════════════ -->
+
+<!-- ── TL CORNER ── -->
+<!-- Arcs centered at (22,22) -->
+<path d="M22,212 A190,190 0 0,1 212,22" fill="none" stroke="#C9A84C" stroke-width="1.4"/>
+<path d="M22,177 A155,155 0 0,1 177,22" fill="none" stroke="#C9A84C" stroke-width="0.7" opacity="0.6"/>
+<path d="M22,147 A125,125 0 0,1 147,22" fill="none" stroke="#C9A84C" stroke-width="0.4" opacity="0.35"/>
+<!-- Fan lines from (22,22) -->
+<line x1="22" y1="22" x2="205" y2="73"  stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="22" y1="22" x2="180" y2="116" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="22" y1="22" x2="156" y2="156" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="22" y1="22" x2="116" y2="180" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="22" y1="22" x2="73"  y2="205" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<!-- Arc accent dots -->
+<circle cx="75"  cy="205" r="2.8" fill="#C9A84C" opacity="0.85"/>
+<circle cx="116" cy="179" r="2"   fill="#C9A84C" opacity="0.6"/>
+<circle cx="156" cy="156" r="3"   fill="#F5E08A" opacity="0.9"/>
+<circle cx="179" cy="116" r="2"   fill="#C9A84C" opacity="0.6"/>
+<circle cx="205" cy="75"  r="2.8" fill="#C9A84C" opacity="0.85"/>
+<!-- Lotus petals at ~(78,78) -->
+<g transform="translate(78,78)">
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(-45)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(45)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(-90)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(0)"/>
+  <circle cx="0" cy="0" r="5" fill="#F5E08A" opacity="0.9"/>
+  <circle cx="0" cy="0" r="2" fill="#8B6914"/>
+</g>
+<!-- Corner diamond -->
+<g transform="translate(22,22) rotate(45)">
+  <rect x="-7" y="-7" width="14" height="14" fill="#C9A84C"/>
+  <rect x="-4" y="-4" width="8" height="8" fill="#06122B"/>
+  <rect x="-1.5" y="-1.5" width="3" height="3" fill="#F5E08A"/>
+</g>
+
+<!-- ── TR CORNER ── -->
+<path d="M1101,212 A190,190 0 0,0 911,22" fill="none" stroke="#C9A84C" stroke-width="1.4"/>
+<path d="M1101,177 A155,155 0 0,0 946,22" fill="none" stroke="#C9A84C" stroke-width="0.7" opacity="0.6"/>
+<path d="M1101,147 A125,125 0 0,0 976,22" fill="none" stroke="#C9A84C" stroke-width="0.4" opacity="0.35"/>
+<line x1="1101" y1="22" x2="918"  y2="73"  stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="1101" y1="22" x2="943"  y2="116" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="1101" y1="22" x2="967"  y2="156" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="1101" y1="22" x2="1007" y2="180" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="1101" y1="22" x2="1050" y2="205" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<circle cx="1048" cy="205" r="2.8" fill="#C9A84C" opacity="0.85"/>
+<circle cx="1007" cy="179" r="2"   fill="#C9A84C" opacity="0.6"/>
+<circle cx="967"  cy="156" r="3"   fill="#F5E08A" opacity="0.9"/>
+<circle cx="943"  cy="116" r="2"   fill="#C9A84C" opacity="0.6"/>
+<circle cx="918"  cy="75"  r="2.8" fill="#C9A84C" opacity="0.85"/>
+<g transform="translate(1045,78)">
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(-45)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(45)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(-90)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(0)"/>
+  <circle cx="0" cy="0" r="5" fill="#F5E08A" opacity="0.9"/>
+  <circle cx="0" cy="0" r="2" fill="#8B6914"/>
+</g>
+<g transform="translate(1101,22) rotate(45)">
+  <rect x="-7" y="-7" width="14" height="14" fill="#C9A84C"/>
+  <rect x="-4" y="-4" width="8" height="8" fill="#06122B"/>
+  <rect x="-1.5" y="-1.5" width="3" height="3" fill="#F5E08A"/>
+</g>
+
+<!-- ── BL CORNER ── -->
+<path d="M22,560 A190,190 0 0,0 212,772" fill="none" stroke="#C9A84C" stroke-width="1.4"/>
+<path d="M22,595 A155,155 0 0,0 177,772" fill="none" stroke="#C9A84C" stroke-width="0.7" opacity="0.6"/>
+<path d="M22,625 A125,125 0 0,0 147,772" fill="none" stroke="#C9A84C" stroke-width="0.4" opacity="0.35"/>
+<line x1="22" y1="772" x2="205" y2="721" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="22" y1="772" x2="180" y2="678" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="22" y1="772" x2="156" y2="638" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="22" y1="772" x2="116" y2="614" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="22" y1="772" x2="73"  y2="589" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<circle cx="75"  cy="589" r="2.8" fill="#C9A84C" opacity="0.85"/>
+<circle cx="116" cy="615" r="2"   fill="#C9A84C" opacity="0.6"/>
+<circle cx="156" cy="638" r="3"   fill="#F5E08A" opacity="0.9"/>
+<circle cx="179" cy="678" r="2"   fill="#C9A84C" opacity="0.6"/>
+<circle cx="205" cy="719" r="2.8" fill="#C9A84C" opacity="0.85"/>
+<g transform="translate(78,716)">
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(-45)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(45)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(-90)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(0)"/>
+  <circle cx="0" cy="0" r="5" fill="#F5E08A" opacity="0.9"/>
+  <circle cx="0" cy="0" r="2" fill="#8B6914"/>
+</g>
+<g transform="translate(22,772) rotate(45)">
+  <rect x="-7" y="-7" width="14" height="14" fill="#C9A84C"/>
+  <rect x="-4" y="-4" width="8" height="8" fill="#06122B"/>
+  <rect x="-1.5" y="-1.5" width="3" height="3" fill="#F5E08A"/>
+</g>
+
+<!-- ── BR CORNER ── -->
+<path d="M1101,560 A190,190 0 0,1 911,772" fill="none" stroke="#C9A84C" stroke-width="1.4"/>
+<path d="M1101,595 A155,155 0 0,1 946,772" fill="none" stroke="#C9A84C" stroke-width="0.7" opacity="0.6"/>
+<path d="M1101,625 A125,125 0 0,1 976,772" fill="none" stroke="#C9A84C" stroke-width="0.4" opacity="0.35"/>
+<line x1="1101" y1="772" x2="918"  y2="721" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="1101" y1="772" x2="943"  y2="678" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="1101" y1="772" x2="967"  y2="638" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="1101" y1="772" x2="1007" y2="614" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<line x1="1101" y1="772" x2="1050" y2="589" stroke="#C9A84C" stroke-width="0.4" opacity="0.3"/>
+<circle cx="1048" cy="589" r="2.8" fill="#C9A84C" opacity="0.85"/>
+<circle cx="1007" cy="615" r="2"   fill="#C9A84C" opacity="0.6"/>
+<circle cx="967"  cy="638" r="3"   fill="#F5E08A" opacity="0.9"/>
+<circle cx="943"  cy="678" r="2"   fill="#C9A84C" opacity="0.6"/>
+<circle cx="918"  cy="719" r="2.8" fill="#C9A84C" opacity="0.85"/>
+<g transform="translate(1045,716)">
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(-45)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(45)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(-90)"/>
+  <path d="M0,0 C-9,-9 -11,-27 0,-40 C11,-27 9,-9 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(0)"/>
+  <circle cx="0" cy="0" r="5" fill="#F5E08A" opacity="0.9"/>
+  <circle cx="0" cy="0" r="2" fill="#8B6914"/>
+</g>
+<g transform="translate(1101,772) rotate(45)">
+  <rect x="-7" y="-7" width="14" height="14" fill="#C9A84C"/>
+  <rect x="-4" y="-4" width="8" height="8" fill="#06122B"/>
+  <rect x="-1.5" y="-1.5" width="3" height="3" fill="#F5E08A"/>
+</g>
+
+<!-- ════════════════════════════════
+     EDGE CENTER ORNAMENTS
+     ════════════════════════════════ -->
+
+<!-- Top center lotus -->
+<g transform="translate(561.5, 76)">
+  <line x1="-180" y1="0" x2="-28" y2="0" stroke="#C9A84C" stroke-width="0.8" opacity="0.7"/>
+  <line x1="28"   y1="0" x2="180" y2="0" stroke="#C9A84C" stroke-width="0.8" opacity="0.7"/>
+  <circle cx="-150" cy="0" r="2.2" fill="#C9A84C" opacity="0.7"/>
+  <circle cx="-110" cy="0" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="-70"  cy="0" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="-40"  cy="0" r="2.2" fill="#C9A84C" opacity="0.7"/>
+  <circle cx="150"  cy="0" r="2.2" fill="#C9A84C" opacity="0.7"/>
+  <circle cx="110"  cy="0" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="70"   cy="0" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="40"   cy="0" r="2.2" fill="#C9A84C" opacity="0.7"/>
+  <!-- Lotus -->
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.65"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.65" transform="rotate(60)"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.65" transform="rotate(-60)"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.4"  transform="rotate(120)"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.4"  transform="rotate(-120)"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(180)"/>
+  <circle cx="0" cy="0" r="7" fill="#F5E08A" opacity="0.95"/>
+  <circle cx="0" cy="0" r="3.5" fill="#8B6914"/>
+</g>
+
+<!-- Bottom center ornament -->
+<g transform="translate(561.5, 718)">
+  <line x1="-180" y1="0" x2="-28" y2="0" stroke="#C9A84C" stroke-width="0.8" opacity="0.7"/>
+  <line x1="28"   y1="0" x2="180" y2="0" stroke="#C9A84C" stroke-width="0.8" opacity="0.7"/>
+  <circle cx="-150" cy="0" r="2.2" fill="#C9A84C" opacity="0.7"/>
+  <circle cx="-110" cy="0" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="-70"  cy="0" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="-40"  cy="0" r="2.2" fill="#C9A84C" opacity="0.7"/>
+  <circle cx="150"  cy="0" r="2.2" fill="#C9A84C" opacity="0.7"/>
+  <circle cx="110"  cy="0" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="70"   cy="0" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="40"   cy="0" r="2.2" fill="#C9A84C" opacity="0.7"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.65"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.65" transform="rotate(60)"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.65" transform="rotate(-60)"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.4"  transform="rotate(120)"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.4"  transform="rotate(-120)"/>
+  <path d="M0,0 C-10,-10 -12,-30 0,-45 C12,-30 10,-10 0,0" fill="#C9A84C" opacity="0.35" transform="rotate(180)"/>
+  <circle cx="0" cy="0" r="7" fill="#F5E08A" opacity="0.95"/>
+  <circle cx="0" cy="0" r="3.5" fill="#8B6914"/>
+</g>
+
+<!-- Left edge diamond -->
+<g transform="translate(22,397)">
+  <line x1="0" y1="-90" x2="0" y2="-20" stroke="#C9A84C" stroke-width="0.8" opacity="0.6"/>
+  <line x1="0" y1="20"  x2="0" y2="90"  stroke="#C9A84C" stroke-width="0.8" opacity="0.6"/>
+  <circle cx="0" cy="-70" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="0" cy="70"  r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <g transform="rotate(45)">
+    <rect x="-8" y="-8" width="16" height="16" fill="#C9A84C" opacity="0.9"/>
+    <rect x="-5" y="-5" width="10" height="10" fill="#06122B"/>
+    <rect x="-2" y="-2" width="4"  height="4"  fill="#F5E08A"/>
+  </g>
+</g>
+
+<!-- Right edge diamond -->
+<g transform="translate(1101,397)">
+  <line x1="0" y1="-90" x2="0" y2="-20" stroke="#C9A84C" stroke-width="0.8" opacity="0.6"/>
+  <line x1="0" y1="20"  x2="0" y2="90"  stroke="#C9A84C" stroke-width="0.8" opacity="0.6"/>
+  <circle cx="0" cy="-70" r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="0" cy="70"  r="1.5" fill="#C9A84C" opacity="0.5"/>
+  <g transform="rotate(45)">
+    <rect x="-8" y="-8" width="16" height="16" fill="#C9A84C" opacity="0.9"/>
+    <rect x="-5" y="-5" width="10" height="10" fill="#06122B"/>
+    <rect x="-2" y="-2" width="4"  height="4"  fill="#F5E08A"/>
+  </g>
+</g>
+
+<!-- ════════════════════════════════
+     CENTER CONTENT FRAME
+     ════════════════════════════════ -->
+<!-- Outer content frame -->
+<rect x="170" y="160" width="783" height="462" rx="3" fill="none" stroke="#C9A84C" stroke-width="1.2" opacity="0.7"/>
+<!-- Inner content frame -->
+<rect x="178" y="168" width="767" height="446" rx="2" fill="none" stroke="#C9A84C" stroke-width="0.5" opacity="0.35"/>
+
+<!-- Frame corner diamonds -->
+<g transform="translate(170,160) rotate(45)"><rect x="-5" y="-5" width="10" height="10" fill="#C9A84C"/><rect x="-2.5" y="-2.5" width="5" height="5" fill="#06122B"/></g>
+<g transform="translate(953,160) rotate(45)"><rect x="-5" y="-5" width="10" height="10" fill="#C9A84C"/><rect x="-2.5" y="-2.5" width="5" height="5" fill="#06122B"/></g>
+<g transform="translate(170,622) rotate(45)"><rect x="-5" y="-5" width="10" height="10" fill="#C9A84C"/><rect x="-2.5" y="-2.5" width="5" height="5" fill="#06122B"/></g>
+<g transform="translate(953,622) rotate(45)"><rect x="-5" y="-5" width="10" height="10" fill="#C9A84C"/><rect x="-2.5" y="-2.5" width="5" height="5" fill="#06122B"/></g>
+
+<!-- Frame mid-edge diamonds -->
+<g transform="translate(561.5,160) rotate(45)"><rect x="-4" y="-4" width="8" height="8" fill="#C9A84C" opacity="0.8"/></g>
+<g transform="translate(561.5,622) rotate(45)"><rect x="-4" y="-4" width="8" height="8" fill="#C9A84C" opacity="0.8"/></g>
+<g transform="translate(170,391) rotate(45)"><rect x="-4" y="-4" width="8" height="8" fill="#C9A84C" opacity="0.8"/></g>
+<g transform="translate(953,391) rotate(45)"><rect x="-4" y="-4" width="8" height="8" fill="#C9A84C" opacity="0.8"/></g>
+
+<!-- Horizontal divider line in frame - upper section -->
+<line x1="186" y1="245" x2="937" y2="245" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
+<line x1="200" y1="249" x2="923" y2="249" stroke="#C9A84C" stroke-width="0.3" opacity="0.3"/>
+
+<!-- Horizontal divider line in frame - lower section -->
+<line x1="186" y1="550" x2="937" y2="550" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
+<line x1="200" y1="546" x2="923" y2="546" stroke="#C9A84C" stroke-width="0.3" opacity="0.3"/>
+
+<!-- Crown/Lotus ornament at top of content area -->
+<g transform="translate(561.5,207)">
+  <!-- Horizontal accent bars -->
+  <line x1="-200" y1="0" x2="-25" y2="0" stroke="#C9A84C" stroke-width="1" opacity="0.6"/>
+  <line x1="25"   y1="0" x2="200" y2="0" stroke="#C9A84C" stroke-width="1" opacity="0.6"/>
+  <line x1="-160" y1="0" x2="-160" y2="0" stroke="#C9A84C" stroke-width="0" opacity="0"/>
+  <circle cx="-170" cy="0" r="2.5" fill="#C9A84C" opacity="0.6"/>
+  <circle cx="-130" cy="0" r="1.8" fill="#C9A84C" opacity="0.45"/>
+  <circle cx="-90"  cy="0" r="1.8" fill="#C9A84C" opacity="0.45"/>
+  <circle cx="-55"  cy="0" r="2.5" fill="#C9A84C" opacity="0.6"/>
+  <circle cx="170"  cy="0" r="2.5" fill="#C9A84C" opacity="0.6"/>
+  <circle cx="130"  cy="0" r="1.8" fill="#C9A84C" opacity="0.45"/>
+  <circle cx="90"   cy="0" r="1.8" fill="#C9A84C" opacity="0.45"/>
+  <circle cx="55"   cy="0" r="2.5" fill="#C9A84C" opacity="0.6"/>
+  <!-- Crown petals -->
+  <path d="M0,0 C-11,-11 -14,-34 0,-52 C14,-34 11,-11 0,0" fill="#C9A84C" opacity="0.7"/>
+  <path d="M0,0 C-11,-11 -14,-34 0,-52 C14,-34 11,-11 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(40)"/>
+  <path d="M0,0 C-11,-11 -14,-34 0,-52 C14,-34 11,-11 0,0" fill="#C9A84C" opacity="0.55" transform="rotate(-40)"/>
+  <path d="M0,0 C-11,-11 -14,-34 0,-52 C14,-34 11,-11 0,0" fill="#C9A84C" opacity="0.3"  transform="rotate(80)"/>
+  <path d="M0,0 C-11,-11 -14,-34 0,-52 C14,-34 11,-11 0,0" fill="#C9A84C" opacity="0.3"  transform="rotate(-80)"/>
+  <circle cx="0" cy="0" r="8" fill="#F5E08A" opacity="0.95"/>
+  <circle cx="0" cy="0" r="4" fill="#8B6914"/>
+</g>
+
+<!-- Bottom of frame ornament -->
+<g transform="translate(561.5,580)">
+  <line x1="-150" y1="0" x2="-20" y2="0" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
+  <line x1="20"   y1="0" x2="150" y2="0" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
+  <circle cx="-120" cy="0" r="2" fill="#C9A84C" opacity="0.55"/>
+  <circle cx="-80"  cy="0" r="1.5" fill="#C9A84C" opacity="0.4"/>
+  <circle cx="-45"  cy="0" r="1.5" fill="#C9A84C" opacity="0.4"/>
+  <circle cx="120"  cy="0" r="2" fill="#C9A84C" opacity="0.55"/>
+  <circle cx="80"   cy="0" r="1.5" fill="#C9A84C" opacity="0.4"/>
+  <circle cx="45"   cy="0" r="1.5" fill="#C9A84C" opacity="0.4"/>
+  <g transform="rotate(45)">
+    <rect x="-6" y="-6" width="12" height="12" fill="none" stroke="#C9A84C" stroke-width="0.8"/>
+    <rect x="-3" y="-3" width="6"  height="6"  fill="#C9A84C" opacity="0.7"/>
+  </g>
+</g>
+
+<!-- ════════════════════════════════
+     SCATTERED ACCENT STARS
+     ════════════════════════════════ -->
+<!-- Background area stars -->
+<g opacity="0.6">
+  <circle cx="95"   cy="240" r="1.2" fill="#C9A84C"/>
+  <circle cx="140"  cy="310" r="0.8" fill="#F5E08A"/>
+  <circle cx="80"   cy="400" r="1.5" fill="#C9A84C"/>
+  <circle cx="110"  cy="480" r="0.8" fill="#F5E08A"/>
+  <circle cx="90"   cy="560" r="1.2" fill="#C9A84C"/>
+  <circle cx="1020" cy="240" r="1.2" fill="#C9A84C"/>
+  <circle cx="980"  cy="320" r="0.8" fill="#F5E08A"/>
+  <circle cx="1040" cy="400" r="1.5" fill="#C9A84C"/>
+  <circle cx="1010" cy="490" r="0.8" fill="#F5E08A"/>
+  <circle cx="1030" cy="560" r="1.2" fill="#C9A84C"/>
+  <circle cx="300"  cy="155" r="1"   fill="#C9A84C"/>
+  <circle cx="420"  cy="148" r="0.8" fill="#F5E08A"/>
+  <circle cx="700"  cy="152" r="1"   fill="#C9A84C"/>
+  <circle cx="820"  cy="146" r="0.8" fill="#F5E08A"/>
+  <circle cx="310"  cy="638" r="1"   fill="#C9A84C"/>
+  <circle cx="430"  cy="644" r="0.8" fill="#F5E08A"/>
+  <circle cx="690"  cy="640" r="1"   fill="#C9A84C"/>
+  <circle cx="810"  cy="646" r="0.8" fill="#F5E08A"/>
+</g>
+
+<!-- 4-point star accents -->
+<g fill="#F5E08A" opacity="0.55">
+  <path d="M130,175 L132,179 L130,183 L128,179Z M128,179 L130,177 L132,179 L130,181Z" transform="rotate(45,130,179)"/>
+  <path d="M990,175 L992,179 L990,183 L988,179Z" transform="rotate(45,990,179)"/>
+  <path d="M130,614 L132,618 L130,622 L128,618Z" transform="rotate(45,130,618)"/>
+  <path d="M990,614 L992,618 L990,622 L988,618Z" transform="rotate(45,990,618)"/>
+</g>
+
+<!-- Subtle 4-pt diamond stars in background -->
+<g stroke="#C9A84C" stroke-width="0.6" fill="none" opacity="0.4">
+  <path d="M100,350 L105,355 L100,360 L95,355Z"/>
+  <path d="M1015,350 L1020,355 L1015,360 L1010,355Z"/>
+  <path d="M100,450 L105,455 L100,460 L95,455Z"/>
+  <path d="M1015,450 L1020,455 L1015,460 L1010,455Z"/>
+</g>
+
+</svg>
+</div>
+</body>
+</html>

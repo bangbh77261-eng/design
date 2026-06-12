@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WarehouseOS — Quản Lý Kho</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* ─── RESET & BASE ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:          #090f1b;
+    --surface:     #000000;
+    --surface2:    #1a2235;
+    --surface3:    #1e2d45;
+    --border:      #1f3050;
+    --accent:      #00d4ff;
+    --accent2:     #00ff9d;
+    --accent3:     #ff6b35;
+    --accent4:     #ffd60a;
+    --danger:      #ff3b5c;
+    --text:        #e2e8f0;
+    --text2:       #8fa3bf;
+    --text3:       #4d647e;
+    --font-mono:   'IBM Plex Mono', monospace;
+    --font-sans:   'IBM Plex Sans', sans-serif;
+    --radius:      8px;
+    --radius-lg:   14px;
+    --shadow:      0 4px 24px rgba(0,0,0,.5);
+    --glow:        0 0 20px rgba(0,212,255,.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* ─── GRID NOISE BACKGROUND ─────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* ─── LAYOUT ─────────────────────────────────────────────── */
+  .app { position: relative; z-index: 1; display: flex; min-height: 100vh; }
+
+  /* ─── SIDEBAR ────────────────────────────────────────────── */
+  .sidebar {
+    width: 240px; flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; height: 100vh;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 4px;
+  }
+  .logo-name {
+    font-size: 18px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+
+  .nav-section {
+    padding: 8px 16px 4px;
+    font-family: var(--font-mono);
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--text3); text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px;
+    cursor: pointer; transition: all .2s;
+    font-size: 13px; font-weight: 500;
+    color: var(--text2);
+    border-left: 3px solid transparent;
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active {
+    background: rgba(0,212,255,.08);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text3); font-family: var(--font-mono);
+  }
+
+  /* ─── MAIN CONTENT ───────────────────────────────────────── */
+  .main {
+    flex: 1;
+    margin-left: 240px;
+    padding: 28px 32px;
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─────────────────────────────────────────────── */
+  .page-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .page-title {
+    font-size: 22px; font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .page-title .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .page-subtitle {
+    font-size: 12px; color: var(--text3);
+    font-family: var(--font-mono); margin-top: 4px;
+  }
+
+
+
+  /* ─── BUTTONS ────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 18px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: none; transition: all .2s; white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent); color: #000;
+  }
+  .btn-primary:hover { background: #33dcff; box-shadow: 0 0 20px rgba(0,212,255,.4); }
+
+  .btn-success {
+    background: var(--accent2); color: #000;
+  }
+  .btn-success:hover { background: #33ffb2; box-shadow: 0 0 20px rgba(0,255,157,.4); }
+
+  .btn-danger { background: rgba(255,59,92,.2); color: var(--danger); border: 1px solid rgba(255,59,92,.3); }
+  .btn-danger:hover { background: rgba(255,59,92,.3); }
+
+  .btn-ghost {
+    background: var(--surface2); color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--surface3); color: var(--text); }
+
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* ─── STATS CARDS ────────────────────────────────────────── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--glow); }
+  .stat-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+  }
+  .stat-card.blue::before   { background: linear-gradient(90deg, var(--accent), transparent); }
+  .stat-card.green::before  { background: linear-gradient(90deg, var(--accent2), transparent); }
+  .stat-card.orange::before { background: linear-gradient(90deg, var(--accent3), transparent); }
+  .stat-card.yellow::before { background: linear-gradient(90deg, var(--accent4), transparent); }
+
+  .stat-label {
+    font-size: 11px; letter-spacing: 1px;
+    color: var(--text3); text-transform: uppercase;
+    font-family: var(--font-mono); margin-bottom: 10px;
+  }
+  .stat-value {
+    font-size: 28px; font-weight: 700;
+    font-family: var(--font-mono); line-height: 1;
+  }
+  .stat-card.blue   .stat-value { color: var(--accent); }
+  .stat-card.green  .stat-value { color: var(--accent2); }
+  .stat-card.orange .stat-value { color: var(--accent3); }
+  .stat-card.yellow .stat-value { color: var(--accent4); }
+
+  .stat-sub {
+    font-size: 11px; color: var(--text3);
+    margin-top: 6px;
+  }
+
+  /* ─── FILTER BAR ─────────────────────────────────────────── */
+  .filter-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+
+  .search-box {
+    position: relative; flex: 1; min-width: 200px;
+  }
+  .search-box input {
+    width: 100%; background: var(--bg);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 9px 12px 9px 36px;
+    color: var(--text); font-size: 13px; outline: none;
+    transition: border-color .2s;
+  }
+  .search-box input:focus { border-color: var(--accent); }
+  .search-box input::placeholder { color: var(--text3); }
+  .search-box .search-icon {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: var(--text3); font-size: 14px; pointer-events: none;
+  }
+
+  select {
+    background: var(--bg);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 9px 32px 9px 12px;
+    color: var(--text); font-size: 13px; outline: none;
+    cursor: pointer; transition: border-color .2s;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234d647e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+  select:focus { border-color: var(--accent); }
+
+  .filter-label {
+    font-size: 11px; color: var(--text3);
+    font-family: var(--font-mono); letter-spacing: 1px;
+  }
+
+  /* ─── TABLE ──────────────────────────────────────────────── */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .table-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-title {
+    font-size: 14px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .record-count {
+    font-size: 11px; color: var(--text3);
+    font-family: var(--font-mono);
+    background: var(--surface2);
+    padding: 2px 8px; border-radius: 20px;
+  }
+
+  .data-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th {
+    padding: 11px 16px; text-align: left;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text3); font-family: var(--font-mono);
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer; user-select: none;
+  }
+  .data-table th:hover { color: var(--accent); }
+
+  .data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(31,48,80,.5);
+    vertical-align: middle;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(0,212,255,.03); }
+
+  .mono { font-family: var(--font-mono); font-size: 12px; }
+
+  /* ─── BADGES ─────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 600; letter-spacing: .5px;
+    font-family: var(--font-mono); text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge::before { content:''; width:6px; height:6px; border-radius:50%; }
+
+  .badge-in-stock  { background: rgba(0,255,157,.1); color: var(--accent2); }
+  .badge-in-stock::before { background: var(--accent2); }
+
+  .badge-low-stock { background: rgba(255,214,10,.1); color: var(--accent4); }
+  .badge-low-stock::before { background: var(--accent4); }
+
+  .badge-out       { background: rgba(255,59,92,.1); color: var(--danger); }
+  .badge-out::before { background: var(--danger); }
+
+  .badge-import  { background: rgba(0,212,255,.1); color: var(--accent); }
+  .badge-import::before { background: var(--accent); }
+
+  .badge-export  { background: rgba(255,107,53,.1); color: var(--accent3); }
+  .badge-export::before { background: var(--accent3); }
+
+  .badge-confirmed { background: rgba(0,255,157,.1); color: var(--accent2); }
+  .badge-confirmed::before { background: var(--accent2); }
+
+  .badge-draft     { background: rgba(77,100,126,.2); color: var(--text3); }
+  .badge-draft::before { background: var(--text3); }
+
+  .badge-cancelled { background: rgba(255,59,92,.1); color: var(--danger); }
+  .badge-cancelled::before { background: var(--danger); }
+
+  /* ─── TABS ───────────────────────────────────────────────── */
+  .tabs {
+    display: flex; gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 4px;
+    margin-bottom: 20px;
+    width: fit-content;
+  }
+  .tab {
+    padding: 8px 20px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all .2s;
+    color: var(--text2); user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    background: var(--surface3);
+    color: var(--accent);
+    box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  }
+
+  /* ─── PAGE SECTIONS ──────────────────────────────────────── */
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+
+  /* ─── LOADING & EMPTY ────────────────────────────────────── */
+  .loading-row td {
+    text-align: center; padding: 40px;
+    color: var(--text3); font-family: var(--font-mono); font-size: 12px;
+  }
+  .loading-spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin .8s linear infinite;
+    margin-right: 8px; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 60px 20px; color: var(--text3);
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; opacity: .4; }
+  .empty-state p { font-size: 13px; font-family: var(--font-mono); }
+
+  /* ─── MODAL ──────────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 560px; max-width: 95vw; max-height: 90vh;
+    overflow-y: auto; box-shadow: var(--shadow);
+    animation: slideUp .25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: none; opacity:1; } }
+
+  .modal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+  }
+  .modal-title { font-size: 16px; font-weight: 700; }
+  .modal-close {
+    background: none; border: none; color: var(--text3);
+    font-size: 20px; cursor: pointer; padding: 4px;
+    transition: color .2s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group:last-child { margin-bottom: 0; }
+  .form-group label {
+    display: block; font-size: 10px; letter-spacing: 1px;
+    color: var(--text3); text-transform: uppercase;
+    font-family: var(--font-mono); margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%; background: var(--bg);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 10px 14px; color: var(--text); font-size: 13px;
+    outline: none; transition: border-color .2s;
+    font-family: var(--font-sans);
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--accent); }
+
+  /* ─── NOTIFICATION ───────────────────────────────────────── */
+  #notification {
+    position: fixed; bottom: 24px; right: 24px;
+    z-index: 999;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .notif {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px; min-width: 280px;
+    display: flex; align-items: center; gap: 10px;
+    animation: slideIn .3s ease; box-shadow: var(--shadow);
+    border-left: 3px solid var(--accent);
+  }
+  .notif.error { border-left-color: var(--danger); }
+  .notif.success { border-left-color: var(--accent2); }
+  @keyframes slideIn { from { transform: translateX(100%); opacity:0; } to { transform: none; opacity:1; } }
+
+  /* ─── CONFIRM DIALOG ─────────────────────────────────────── */
+  .details-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  .details-table th {
+    background: var(--surface2); color: var(--text3);
+    font-size: 10px; letter-spacing: 1px; padding: 8px 12px; text-align: left;
+    font-family: var(--font-mono); text-transform: uppercase;
+  }
+  .details-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .details-table tr:last-child td { border-bottom: none; }
+
+  /* ─── RESPONSIVE ─────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .sidebar { width: 60px; }
+    .sidebar .logo-name, .sidebar .nav-item span, .sidebar-footer,
+    .sidebar .logo-mark, .nav-section { display: none; }
+    .main { margin-left: 60px; padding: 20px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">// WMS</div>
+      <div class="logo-name">WarehouseOS</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Menu chính</div>
+      <div class="nav-item active" onclick="switchPage('dashboard')">
+        <span class="icon">📊</span><span>Dashboard</span>
+      </div>
+      <div class="nav-item" onclick="switchPage('inventory')">
+        <span class="icon">📦</span><span>Tồn kho</span>
+      </div>
+      <div class="nav-section">Giao dịch</div>
+      <div class="nav-item" onclick="switchPage('transactions')">
+        <span class="icon">🔄</span><span>Phiếu nhập / xuất</span>
+      </div>
+      <div class="nav-section">Danh mục</div>
+      <div class="nav-item" onclick="switchPage('products')">
+        <span class="icon">🏷️</span><span>Hàng hóa</span>
+      </div>
+      <div class="nav-item" onclick="switchPage('suppliers')">
+        <span class="icon">🏭</span><span>Nhà cung cấp</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer" id="conn-status">🔄 Đang kết nối...</div>
+  </aside>
+
+  <!-- ═══════════════════ MAIN ═══════════════════════ -->
+  <main class="main">
+
+    <!-- ─── DASHBOARD PAGE ─── -->
+    <div class="page-section active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title"><div class="dot"></div>Dashboard Tổng Quan</div>
+          <div class="page-subtitle">// WAREHOUSE_OS.REPORT — Cập nhật real-time</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="refreshDashboard()">🔄 Làm mới</button>
+      </div>
+
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-label">Tổng hàng hóa</div>
+          <div class="stat-value" id="s-products">—</div>
+          <div class="stat-sub">sản phẩm đang hoạt động</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Giá trị tồn kho</div>
+          <div class="stat-value" id="s-value">—</div>
+          <div class="stat-sub">tổng giá trị hiện tại</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">Hàng sắp hết</div>
+          <div class="stat-value" id="s-low">—</div>
+          <div class="stat-sub">dưới mức tối thiểu</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">Hết hàng</div>
+          <div class="stat-value" id="s-out">—</div>
+          <div class="stat-sub">cần nhập ngay</div>
+        </div>
+      </div>
+
+      <!-- Second row stats -->
+      <div class="stats-grid" style="margin-bottom:24px;">
+        <div class="stat-card blue">
+          <div class="stat-label">Nhập kho tháng này</div>
+          <div class="stat-value" id="s-imports">—</div>
+          <div class="stat-sub" id="s-import-val">phiếu xác nhận</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">Xuất kho tháng này</div>
+          <div class="stat-value" id="s-exports">—</div>
+          <div class="stat-sub" id="s-export-val">phiếu xác nhận</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Nhà cung cấp</div>
+          <div class="stat-value" id="s-suppliers">—</div>
+          <div class="stat-sub">đang hoạt động</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Kho hàng</div>
+          <div class="stat-value" id="s-warehouses">—</div>
+          <div class="stat-sub">kho quản lý</div>
+        </div>
+      </div>
+
+      <!-- Low stock table -->
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">
+            ⚠️ Cảnh báo tồn kho thấp
+            <span class="record-count" id="low-stock-count">0 mặt hàng</span>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Mã SP</th>
+              <th>Tên hàng hóa</th>
+              <th>Danh mục</th>
+              <th>Kho</th>
+              <th>Tồn kho</th>
+              <th>Tối thiểu</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="low-stock-body">
+            <tr class="loading-row"><td colspan="7"><span class="loading-spinner"></span>Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── INVENTORY PAGE ─── -->
+    <div class="page-section" id="page-inventory">
+      <div class="page-header">
+        <div>
+          <div class="page-title"><div class="dot"></div>Quản Lý Tồn Kho</div>
+          <div class="page-subtitle">// INVENTORY.DETAIL — Toàn bộ hàng hóa trong kho</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="loadInventory()">🔄 Làm mới</button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Tìm mã SP, tên hàng..." id="inv-search" oninput="filterInventory()">
+        </div>
+        <span class="filter-label">Trạng thái:</span>
+        <select id="inv-status" onchange="filterInventory()">
+          <option value="">Tất cả</option>
+          <option value="IN_STOCK">Còn hàng</option>
+          <option value="LOW_STOCK">Sắp hết</option>
+          <option value="OUT_OF_STOCK">Hết hàng</option>
+        </select>
+        <span class="filter-label">Kho:</span>
+        <select id="inv-warehouse" onchange="filterInventory()">
+          <option value="">Tất cả kho</option>
+        </select>
+        <span class="filter-label">Danh mục:</span>
+        <select id="inv-category" onchange="filterInventory()">
+          <option value="">Tất cả</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">
+            📦 Danh sách tồn kho
+            <span class="record-count" id="inv-count">0 mặt hàng</span>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th onclick="sortTable('inv', 'product_code')">Mã SP ↕</th>
+              <th onclick="sortTable('inv', 'product_name')">Tên hàng hóa ↕</th>
+              <th>Danh mục</th>
+              <th>ĐVT</th>
+              <th>Kho</th>
+              <th onclick="sortTable('inv', 'quantity')">Số lượng ↕</th>
+              <th>Tối thiểu</th>
+              <th onclick="sortTable('inv', 'stock_value')">Giá trị ↕</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="inv-body">
+            <tr class="loading-row"><td colspan="9"><span class="loading-spinner"></span>Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── TRANSACTIONS PAGE ─── -->
+    <div class="page-section" id="page-transactions">
+      <div class="page-header">
+        <div>
+          <div class="page-title"><div class="dot"></div>Phiếu Nhập / Xuất Kho</div>
+          <div class="page-subtitle">// TRANSACTIONS.HISTORY — Lịch sử giao dịch kho</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="openTransactionModal('IMPORT')">＋ Phiếu nhập</button>
+          <button class="btn btn-success" onclick="openTransactionModal('EXPORT')">↗ Phiếu xuất</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Tìm mã phiếu, sản phẩm..." id="tx-search" oninput="filterTransactions()">
+        </div>
+        <span class="filter-label">Loại:</span>
+        <select id="tx-type" onchange="filterTransactions()">
+          <option value="">Tất cả</option>
+          <option value="IMPORT">Nhập kho</option>
+          <option value="EXPORT">Xuất kho</option>
+        </select>
+        <span class="filter-label">Trạng thái:</span>
+        <select id="tx-status" onchange="filterTransactions()">
+          <option value="">Tất cả</option>
+          <option value="DRAFT">Nháp</option>
+          <option value="CONFIRMED">Đã xác nhận</option>
+          <option value="CANCELLED">Đã hủy</option>
+        </select>
+        <input type="date" id="tx-date-from" onchange="filterTransactions()" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;color:var(--text);font-size:13px;outline:none;">
+        <span class="filter-label">→</span>
+        <input type="date" id="tx-date-to" onchange="filterTransactions()" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;color:var(--text);font-size:13px;outline:none;">
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">
+            🔄 Lịch sử giao dịch
+            <span class="record-count" id="tx-count">0 phiếu</span>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Mã phiếu</th>
+              <th>Loại</th>
+              <th>Ngày</th>
+              <th>Kho</th>
+              <th>Nhà cung cấp</th>
+              <th>Hàng hóa</th>
+              <th>SL</th>
+              <th>Giá trị</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="tx-body">
+            <tr class="loading-row"><td colspan="10"><span class="loading-spinner"></span>Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── PRODUCTS PAGE ─── -->
+    <div class="page-section" id="page-products">
+      <div class="page-header">
+        <div>
+          <div class="page-title"><div class="dot"></div>Danh Mục Hàng Hóa</div>
+          <div class="page-subtitle">// PRODUCTS.MASTER — Quản lý danh sách sản phẩm</div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Tìm mã, tên sản phẩm..." id="prod-search" oninput="filterProducts()">
+        </div>
+        <span class="filter-label">Danh mục:</span>
+        <select id="prod-category" onchange="filterProducts()">
+          <option value="">Tất cả</option>
+        </select>
+        <select id="prod-active" onchange="filterProducts()">
+          <option value="">Tất cả</option>
+          <option value="true">Đang bán</option>
+          <option value="false">Ngưng bán</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">
+            🏷️ Danh sách sản phẩm
+            <span class="record-count" id="prod-count">0 sản phẩm</span>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Mã SP</th>
+              <th>Tên sản phẩm</th>
+              <th>Danh mục</th>
+              <th>ĐVT</th>
+              <th>Giá nhập</th>
+              <th>Giá bán</th>
+              <th>Tồn tối thiểu</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="prod-body">
+            <tr class="loading-row"><td colspan="8"><span class="loading-spinner"></span>Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── SUPPLIERS PAGE ─── -->
+    <div class="page-section" id="page-suppliers">
+      <div class="page-header">
+        <div>
+          <div class="page-title"><div class="dot"></div>Nhà Cung Cấp</div>
+          <div class="page-subtitle">// SUPPLIERS.MASTER — Danh sách nhà cung cấp</div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Tìm tên, mã NCC..." id="sup-search" oninput="filterSuppliers()">
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">
+            🏭 Danh sách nhà cung cấp
+            <span class="record-count" id="sup-count">0 nhà cung cấp</span>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Mã NCC</th>
+              <th>Tên công ty</th>
+              <th>Người liên hệ</th>
+              <th>Điện thoại</th>
+              <th>Email</th>
+              <th>Địa chỉ</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="sup-body">
+            <tr class="loading-row"><td colspan="7"><span class="loading-spinner"></span>Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main><!-- end .main -->
+</div><!-- end .app -->
+
+<!-- ═══════════════════ MODAL: Tạo phiếu ═══════════════════ -->
+<div class="modal-overlay" id="tx-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="tx-modal-title">Tạo phiếu nhập kho</div>
+      <button class="modal-close" onclick="closeModal('tx-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Loại phiếu</label>
+          <select id="tx-type-select">
+            <option value="IMPORT">Nhập kho</option>
+            <option value="EXPORT">Xuất kho</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Mã phiếu</label>
+          <input type="text" id="tx-no" placeholder="Tự động tạo" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Kho</label>
+          <select id="tx-warehouse-select"></select>
+        </div>
+        <div class="form-group">
+          <label>Ngày giao dịch</label>
+          <input type="date" id="tx-date-select" />
+        </div>
+      </div>
+      <div class="form-group" id="tx-supplier-group">
+        <label>Nhà cung cấp (nhập kho)</label>
+        <select id="tx-supplier-select">
+          <option value="">— Chọn nhà cung cấp —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ghi chú</label>
+        <textarea id="tx-note" rows="2" placeholder="Ghi chú..."></textarea>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <strong style="font-size:13px;">Chi tiết hàng hóa</strong>
+          <button class="btn btn-ghost btn-sm" onclick="addDetailRow()">＋ Thêm dòng</button>
+        </div>
+        <table class="details-table" id="detail-table">
+          <thead>
+            <tr>
+              <th>Hàng hóa</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="detail-rows"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('tx-modal')">Hủy</button>
+      <button class="btn btn-ghost" onclick="saveTransaction('DRAFT')">💾 Lưu nháp</button>
+      <button class="btn btn-primary" onclick="saveTransaction('CONFIRMED')">✅ Xác nhận ngay</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ NOTIFICATIONS ══════════════════════ -->
+<div id="notification"></div>
+
+<!-- ═══════════════════ JAVASCRIPT ═════════════════════════ -->
+<script>
+// Expose onclick functions BEFORE DOMContentLoaded so HTML onclick="" works
+// These are thin wrappers that delegate to the real functions once loaded
+['switchPage','openTransactionModal','closeModal','addDetailRow',
+ 'saveTransaction','confirmTransaction','filterInventory','filterTransactions',
+ 'filterProducts','filterSuppliers','sortTable','refreshDashboard','loadInventory'
+].forEach(fn => {
+  window[fn] = function(...args) {
+    if (window.__wms && window.__wms[fn]) return window.__wms[fn](...args);
+    console.warn(fn + ' called before app ready');
+  };
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+// ─────────────────────────────────────────────────────────
+//  GLOBAL STATE
+// ─────────────────────────────────────────────────────────
+let _db = null;   // Supabase client (renamed to avoid conflict with window.supabase)
+let allInventory = [], allTransactions = [], allProducts = [], allSuppliers = [];
+let allWarehouses = [], allCategories = [];
+let invSort = { key: null, asc: true };
+let currentPage = 'dashboard';
+
+// ─────────────────────────────────────────────────────────
+//  INIT SUPABASE — Auto connect (credentials hardcoded)
+// ─────────────────────────────────────────────────────────
+const _SB_URL = 'https://uijplnwxyrhlgmenzyls.supabase.co';
+const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpanBsbnd4eXJobGdtZW56eWxzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODQ5ODAsImV4cCI6MjA4Nzc2MDk4MH0.qa8h6a6AeK7nfBJJytwMiJYoD2p-QWROA6ylm5RpTm8';
+
+async function initSupabase() {
+  try {
+    _db = window.supabase.createClient(_SB_URL, _SB_KEY);
+    const { error } = await _db.from('products').select('id').limit(1);
+    if (error) throw error;
+    document.getElementById('conn-status').innerHTML = '🟢 Đã kết nối';
+    notify('Kết nối Supabase thành công!', 'success');
+    await loadAllData();
+  } catch (e) {
+    document.getElementById('conn-status').innerHTML = '🔴 Lỗi kết nối';
+    notify('Lỗi kết nối: ' + e.message, 'error');
+  }
+}
+
+
+// ─────────────────────────────────────────────────────────
+//  LOAD ALL DATA
+// ─────────────────────────────────────────────────────────
+async function loadAllData() {
+  await Promise.all([
+    loadInventory(),
+    loadTransactions(),
+    loadProducts(),
+    loadSuppliers(),
+    loadCategories(),
+    loadWarehouses(),
+    refreshDashboard()
+  ]);
+  populateFilters();
+}
+
+async function loadInventory() {
+  if (!_db) return;
+  const { data, error } = await _db.from('vw_inventory_detail').select('*').order('product_name');
+  if (error) { notify('Lỗi tải tồn kho: ' + error.message, 'error'); return; }
+  allInventory = data;
+  renderInventory();
+}
+
+async function loadTransactions() {
+  if (!_db) return;
+  const { data, error } = await _db.from('vw_transaction_history').select('*').order('transaction_date', {ascending:false}).limit(200);
+  if (error) { notify('Lỗi tải giao dịch: ' + error.message, 'error'); return; }
+  allTransactions = data;
+  renderTransactions();
+}
+
+async function loadProducts() {
+  if (!_db) return;
+  const { data, error } = await _db.from('products').select('*, categories(name)').order('name');
+  if (error) return;
+  allProducts = data.map(p => ({...p, category_name: p.categories?.name}));
+  renderProducts();
+}
+
+async function loadSuppliers() {
+  if (!_db) return;
+  const { data, error } = await _db.from('suppliers').select('*').order('name');
+  if (error) return;
+  allSuppliers = data;
+  renderSuppliers();
+}
+
+async function loadCategories() {
+  if (!_db) return;
+  const { data } = await _db.from('categories').select('*');
+  if (data) allCategories = data;
+}
+
+async function loadWarehouses() {
+  if (!_db) return;
+  const { data } = await _db.from('warehouses').select('*').eq('is_active', true);
+  if (data) allWarehouses = data;
+}
+
+async function refreshDashboard() {
+  if (supabase) {
+    const { data } = await _db.from('vw_dashboard_summary').select('*').single();
+    if (data) {
+      document.getElementById('s-products').textContent   = data.total_products ?? '—';
+      document.getElementById('s-value').textContent      = fmtMoney(data.total_stock_value);
+      document.getElementById('s-low').textContent        = data.low_stock_count ?? '—';
+      document.getElementById('s-out').textContent        = data.out_of_stock_count ?? '—';
+      document.getElementById('s-imports').textContent    = data.imports_this_month ?? '—';
+      document.getElementById('s-exports').textContent    = data.exports_this_month ?? '—';
+      document.getElementById('s-suppliers').textContent  = data.total_suppliers ?? '—';
+      document.getElementById('s-warehouses').textContent = data.total_warehouses ?? '—';
+      document.getElementById('s-import-val').textContent = fmtMoney(data.import_value_this_month);
+      document.getElementById('s-export-val').textContent = fmtMoney(data.export_value_this_month);
+    }
+  } else {
+    // Demo stats
+    const inv = allInventory;
+    const totalValue = inv.reduce((s,i)=>s+Number(i.stock_value||0),0);
+    const low   = inv.filter(i=>i.stock_status==='LOW_STOCK').length;
+    const out   = inv.filter(i=>i.stock_status==='OUT_OF_STOCK').length;
+    document.getElementById('s-products').textContent   = allProducts.length;
+    document.getElementById('s-value').textContent      = fmtMoney(totalValue);
+    document.getElementById('s-low').textContent        = low;
+    document.getElementById('s-out').textContent        = out;
+    document.getElementById('s-imports').textContent    = allTransactions.filter(t=>t.type==='IMPORT'&&t.status==='CONFIRMED').length;
+    document.getElementById('s-exports').textContent    = allTransactions.filter(t=>t.type==='EXPORT'&&t.status==='CONFIRMED').length;
+    document.getElementById('s-suppliers').textContent  = allSuppliers.length;
+    document.getElementById('s-warehouses').textContent = allWarehouses.length;
+  }
+  renderLowStock();
+}
+
+// ─────────────────────────────────────────────────────────
+//  RENDER FUNCTIONS
+// ─────────────────────────────────────────────────────────
+function renderLowStock() {
+  const items = allInventory.filter(i=>i.stock_status!=='IN_STOCK');
+  document.getElementById('low-stock-count').textContent = items.length + ' mặt hàng';
+  const tbody = document.getElementById('low-stock-body');
+  if (!items.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">✅</div><p>Tất cả hàng hóa đều đủ tồn kho</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = items.map(i=>`<tr>
+    <td class="mono">${i.product_code}</td>
+    <td><strong>${i.product_name}</strong></td>
+    <td>${i.category_name||'—'}</td>
+    <td>${i.warehouse_name}</td>
+    <td class="mono" style="color:${i.quantity===0?'var(--danger)':'var(--accent4)'}">${fmt(i.quantity)}</td>
+    <td class="mono">${fmt(i.min_stock)}</td>
+    <td>${statusBadge(i.stock_status)}</td>
+  </tr>`).join('');
+}
+
+function renderInventory() {
+  let items = [...allInventory];
+  const q  = (document.getElementById('inv-search')?.value||'').toLowerCase();
+  const st = document.getElementById('inv-status')?.value||'';
+  const wh = document.getElementById('inv-warehouse')?.value||'';
+  const cat= document.getElementById('inv-category')?.value||'';
+
+  if (q)   items = items.filter(i=>(i.product_code+i.product_name).toLowerCase().includes(q));
+  if (st)  items = items.filter(i=>i.stock_status===st);
+  if (wh)  items = items.filter(i=>i.warehouse_name===wh);
+  if (cat) items = items.filter(i=>i.category_name===cat);
+
+  if (invSort.key) {
+    items.sort((a,b)=>{
+      const av=a[invSort.key], bv=b[invSort.key];
+      return (av<bv?-1:av>bv?1:0)*(invSort.asc?1:-1);
+    });
+  }
+
+  document.getElementById('inv-count').textContent = items.length + ' mặt hàng';
+  const tbody = document.getElementById('inv-body');
+  if (!items.length) {
+    tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="icon">📭</div><p>Không có dữ liệu phù hợp</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = items.map(i=>`<tr>
+    <td class="mono" style="color:var(--accent)">${i.product_code}</td>
+    <td><strong>${i.product_name}</strong></td>
+    <td>${i.category_name||'—'}</td>
+    <td>${i.unit}</td>
+    <td>${i.warehouse_name}</td>
+    <td class="mono" style="font-weight:600;color:${i.quantity===0?'var(--danger)':i.stock_status==='LOW_STOCK'?'var(--accent4)':'var(--accent2)'}">${fmt(i.quantity)}</td>
+    <td class="mono">${fmt(i.min_stock)}</td>
+    <td class="mono">${fmtMoney(i.stock_value)}</td>
+    <td>${statusBadge(i.stock_status)}</td>
+  </tr>`).join('');
+}
+
+function renderTransactions() {
+  let items = [...allTransactions];
+  const q  = (document.getElementById('tx-search')?.value||'').toLowerCase();
+  const ty = document.getElementById('tx-type')?.value||'';
+  const st = document.getElementById('tx-status')?.value||'';
+  const df = document.getElementById('tx-date-from')?.value||'';
+  const dt = document.getElementById('tx-date-to')?.value||'';
+
+  if (q)  items = items.filter(i=>(i.transaction_no+i.product_name+i.product_code).toLowerCase().includes(q));
+  if (ty) items = items.filter(i=>i.type===ty);
+  if (st) items = items.filter(i=>i.status===st);
+  if (df) items = items.filter(i=>i.transaction_date>=df);
+  if (dt) items = items.filter(i=>i.transaction_date<=dt);
+
+  document.getElementById('tx-count').textContent = items.length + ' dòng';
+  const tbody = document.getElementById('tx-body');
+  if (!items.length) {
+    tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="icon">📋</div><p>Không có giao dịch phù hợp</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = items.map(i=>`<tr>
+    <td class="mono" style="color:var(--accent)">${i.transaction_no}</td>
+    <td><span class="badge ${i.type==='IMPORT'?'badge-import':'badge-export'}">${i.type_label||i.type}</span></td>
+    <td class="mono">${i.transaction_date}</td>
+    <td>${i.warehouse_name}</td>
+    <td>${i.supplier_name||'—'}</td>
+    <td><strong>${i.product_name}</strong> <span style="color:var(--text3);font-size:11px;">[${i.product_code}]</span></td>
+    <td class="mono">${fmt(i.quantity)} ${i.unit}</td>
+    <td class="mono">${fmtMoney(i.total_price)}</td>
+    <td>${txStatusBadge(i.status)}</td>
+    <td>
+      ${i.status==='DRAFT'?`<button class="btn btn-success btn-sm" onclick="confirmTransaction(${i.id})">✅ Xác nhận</button>`:''}
+    </td>
+  </tr>`).join('');
+}
+
+function renderProducts() {
+  let items = [...allProducts];
+  const q   = (document.getElementById('prod-search')?.value||'').toLowerCase();
+  const cat = document.getElementById('prod-category')?.value||'';
+  const act = document.getElementById('prod-active')?.value||'';
+
+  if (q)   items = items.filter(i=>(i.code+i.name).toLowerCase().includes(q));
+  if (cat) items = items.filter(i=>i.category_name===cat);
+  if (act) items = items.filter(i=>String(i.is_active)===act);
+
+  document.getElementById('prod-count').textContent = items.length + ' sản phẩm';
+  const tbody = document.getElementById('prod-body');
+  if (!items.length) {
+    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="icon">🏷️</div><p>Không có sản phẩm</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = items.map(p=>`<tr>
+    <td class="mono" style="color:var(--accent)">${p.code}</td>
+    <td><strong>${p.name}</strong></td>
+    <td>${p.category_name||'—'}</td>
+    <td>${p.unit}</td>
+    <td class="mono">${fmtMoney(p.purchase_price)}</td>
+    <td class="mono">${fmtMoney(p.selling_price)}</td>
+    <td class="mono">${fmt(p.min_stock)}</td>
+    <td><span class="badge ${p.is_active?'badge-in-stock':'badge-out'}">${p.is_active?'Đang bán':'Ngưng'}</span></td>
+  </tr>`).join('');
+}
+
+function renderSuppliers() {
+  let items = [...allSuppliers];
+  const q = (document.getElementById('sup-search')?.value||'').toLowerCase();
+  if (q) items = items.filter(i=>(i.code+i.name).toLowerCase().includes(q));
+
+  document.getElementById('sup-count').textContent = items.length + ' nhà cung cấp';
+  const tbody = document.getElementById('sup-body');
+  if (!items.length) {
+    tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="icon">🏭</div><p>Không có nhà cung cấp</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = items.map(s=>`<tr>
+    <td class="mono" style="color:var(--accent)">${s.code}</td>
+    <td><strong>${s.name}</strong></td>
+    <td>${s.contact||'—'}</td>
+    <td class="mono">${s.phone||'—'}</td>
+    <td>${s.email||'—'}</td>
+    <td>${s.address||'—'}</td>
+    <td><span class="badge ${s.is_active?'badge-in-stock':'badge-out'}">${s.is_active?'Hoạt động':'Ngưng'}</span></td>
+  </tr>`).join('');
+}
+
+// ─────────────────────────────────────────────────────────
+//  POPULATE FILTER DROPDOWNS
+// ─────────────────────────────────────────────────────────
+function populateFilters() {
+  const warehouses = [...new Set(allInventory.map(i=>i.warehouse_name))];
+  const categories = [...new Set(allInventory.map(i=>i.category_name).filter(Boolean))];
+
+  const invWh = document.getElementById('inv-warehouse');
+  if (invWh) {
+    invWh.innerHTML = '<option value="">Tất cả kho</option>' +
+      warehouses.map(w=>`<option value="${w}">${w}</option>`).join('');
+  }
+  const invCat = document.getElementById('inv-category');
+  if (invCat) {
+    invCat.innerHTML = '<option value="">Tất cả</option>' +
+      categories.map(c=>`<option value="${c}">${c}</option>`).join('');
+  }
+  const prodCat = document.getElementById('prod-category');
+  const catNames = [...new Set(allProducts.map(p=>p.category_name).filter(Boolean))];
+  if (prodCat) {
+    prodCat.innerHTML = '<option value="">Tất cả</option>' +
+      catNames.map(c=>`<option value="${c}">${c}</option>`).join('');
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+//  MODAL TRANSACTION
+// ─────────────────────────────────────────────────────────
+function openTransactionModal(type) {
+  document.getElementById('tx-modal').classList.add('open');
+  document.getElementById('tx-type-select').value = type;
+  document.getElementById('tx-modal-title').textContent = type==='IMPORT'?'Tạo phiếu nhập kho':'Tạo phiếu xuất kho';
+  document.getElementById('tx-date-select').value = new Date().toISOString().slice(0,10);
+  document.getElementById('tx-no').value = type + new Date().getTime().toString().slice(-6);
+  document.getElementById('tx-supplier-group').style.display = type==='IMPORT'?'block':'none';
+
+  // Populate warehouse select
+  const whSel = document.getElementById('tx-warehouse-select');
+  whSel.innerHTML = allWarehouses.map(w=>`<option value="${w.id}">${w.name}</option>`).join('');
+
+  // Populate supplier select
+  const supSel = document.getElementById('tx-supplier-select');
+  supSel.innerHTML = '<option value="">— Chọn NCC —</option>' +
+    allSuppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+
+  document.getElementById('tx-type-select').onchange = () => {
+    const t = document.getElementById('tx-type-select').value;
+    document.getElementById('tx-supplier-group').style.display = t==='IMPORT'?'block':'none';
+    document.getElementById('tx-modal-title').textContent = t==='IMPORT'?'Tạo phiếu nhập kho':'Tạo phiếu xuất kho';
+  };
+
+  document.getElementById('detail-rows').innerHTML = '';
+  addDetailRow();
+}
+
+function addDetailRow() {
+  const tbody = document.getElementById('detail-rows');
+  const idx = tbody.children.length;
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>
+      <select style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;outline:none;">
+        <option value="">— Chọn hàng hóa —</option>
+        ${allProducts.map(p=>`<option value="${p.id}" data-price="${p.purchase_price}">${p.code} - ${p.name}</option>`).join('')}
+      </select>
+    </td>
+    <td><input type="number" min="1" value="1" style="width:80px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;outline:none;"></td>
+    <td><input type="number" min="0" value="0" style="width:120px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;outline:none;"></td>
+    <td><button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">✕</button></td>`;
+
+  // Auto-fill price on product select
+  const sel = row.querySelector('select');
+  const priceInput = row.querySelectorAll('input')[1];
+  sel.onchange = () => {
+    const opt = sel.selectedOptions[0];
+    if (opt && opt.dataset.price) priceInput.value = opt.dataset.price;
+  };
+  tbody.appendChild(row);
+}
+
+async function saveTransaction(status) {
+  if (!_db) { notify('Vui lòng kết nối Supabase để tạo phiếu', 'error'); return; }
+
+  const type      = document.getElementById('tx-type-select').value;
+  const warehouseId = parseInt(document.getElementById('tx-warehouse-select').value);
+  const supplierId  = document.getElementById('tx-supplier-select').value;
+  const txNo      = document.getElementById('tx-no').value.trim();
+  const txDate    = document.getElementById('tx-date-select').value;
+  const note      = document.getElementById('tx-note').value;
+
+  // Collect details
+  const details = [];
+  for (const row of document.querySelectorAll('#detail-rows tr')) {
+    const sel = row.querySelector('select');
+    const inputs = row.querySelectorAll('input');
+    const productId = parseInt(sel?.value);
+    const qty       = parseFloat(inputs[0]?.value)||0;
+    const price     = parseFloat(inputs[1]?.value)||0;
+    if (!productId || !qty) continue;
+    details.push({product_id: productId, quantity: qty, unit_price: price});
+  }
+  if (!details.length) { notify('Vui lòng thêm ít nhất 1 dòng hàng hóa', 'error'); return; }
+
+  try {
+    const { data: tx, error: txErr } = await _db.from('stock_transactions').insert({
+      transaction_no: txNo, type, warehouse_id: warehouseId,
+      supplier_id: supplierId || null, transaction_date: txDate,
+      note, status: 'DRAFT', created_by: 'user'
+    }).select().single();
+    if (txErr) throw txErr;
+
+    const detailRows = details.map(d=>({...d, transaction_id: tx.id}));
+    const { error: dtErr } = await _db.from('transaction_details').insert(detailRows);
+    if (dtErr) throw dtErr;
+
+    if (status === 'CONFIRMED') {
+      const { error: cfErr } = await _db.from('stock_transactions')
+        .update({status:'CONFIRMED'}).eq('id', tx.id);
+      if (cfErr) throw cfErr;
+    }
+
+    notify(`Tạo phiếu thành công! ${status==='CONFIRMED'?'Tồn kho đã được cập nhật.':''}`, 'success');
+    closeModal('tx-modal');
+    await loadAllData();
+  } catch (e) {
+    notify('Lỗi: ' + e.message, 'error');
+  }
+}
+
+async function confirmTransaction(id) {
+  if (!_db) { notify('Vui lòng kết nối Supabase', 'error'); return; }
+  if (!confirm('Xác nhận phiếu này? Tồn kho sẽ được cập nhật ngay.')) return;
+  try {
+    const { error } = await _db.from('stock_transactions')
+      .update({status:'CONFIRMED'}).eq('id', id);
+    if (error) throw error;
+    notify('Xác nhận thành công! Tồn kho đã cập nhật.', 'success');
+    await loadAllData();
+  } catch(e) {
+    notify('Lỗi: ' + e.message, 'error');
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+//  FILTERS
+// ─────────────────────────────────────────────────────────
+function filterInventory()    { renderInventory(); }
+function filterTransactions() { renderTransactions(); }
+function filterProducts()     { renderProducts(); }
+function filterSuppliers()    { renderSuppliers(); }
+
+function sortTable(table, key) {
+  if (table === 'inv') {
+    invSort.asc = invSort.key === key ? !invSort.asc : true;
+    invSort.key = key;
+    renderInventory();
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+//  NAVIGATION
+// ─────────────────────────────────────────────────────────
+function switchPage(page) {
+  currentPage = page;
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page)?.classList.add('active');
+  document.querySelector(`.nav-item[onclick*="${page}"]`)?.classList.add('active');
+  if (page==='dashboard') refreshDashboard();
+}
+
+// ─────────────────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────────────────
+function closeModal(id) {
+  document.getElementById(id)?.classList.remove('open');
+}
+
+function notify(msg, type='info') {
+  const wrap = document.getElementById('notification');
+  const el   = document.createElement('div');
+  el.className= `notif ${type}`;
+  el.innerHTML= `<span>${type==='success'?'✅':type==='error'?'❌':'ℹ️'}</span>${msg}`;
+  wrap.appendChild(el);
+  setTimeout(()=>el.remove(), 4000);
+}
+
+function fmt(n) {
+  if (n===null||n===undefined) return '—';
+  return Number(n).toLocaleString('vi-VN');
+}
+function fmtMoney(n) {
+  if (!n && n!==0) return '—';
+  if (n >= 1e9)  return (n/1e9).toFixed(1) + ' tỷ';
+  if (n >= 1e6)  return (n/1e6).toFixed(1) + ' triệu';
+  return Number(n).toLocaleString('vi-VN') + 'đ';
+}
+
+function statusBadge(s) {
+  if (s==='IN_STOCK')      return `<span class="badge badge-in-stock">Còn hàng</span>`;
+  if (s==='LOW_STOCK')     return `<span class="badge badge-low-stock">Sắp hết</span>`;
+  if (s==='OUT_OF_STOCK')  return `<span class="badge badge-out">Hết hàng</span>`;
+  return `<span class="badge">${s}</span>`;
+}
+function txStatusBadge(s) {
+  if (s==='CONFIRMED') return `<span class="badge badge-confirmed">Đã xác nhận</span>`;
+  if (s==='DRAFT')     return `<span class="badge badge-draft">Nháp</span>`;
+  if (s==='CANCELLED') return `<span class="badge badge-cancelled">Đã hủy</span>`;
+  return `<span class="badge">${s}</span>`;
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click', e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+
+// Register all functions for the window proxy wrappers above
+window.__wms = {
+  switchPage, openTransactionModal, closeModal, addDetailRow,
+  saveTransaction, confirmTransaction, filterInventory, filterTransactions,
+  filterProducts, filterSuppliers, sortTable, refreshDashboard, loadInventory
+};
+
+// ─── AUTO CONNECT ────────────────────────────────────────
+initSupabase();
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>

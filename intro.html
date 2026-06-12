@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enspire Video Intro Generator - Ultimate Visual Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Comfortaa & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700;900&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+        }
+        .logo-text {
+            font-family: 'Comfortaa', sans-serif;
+        }
+        /* Custom scrollbar for control panel */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <i class="fa-solid fa-wand-magic-sparkles text-xl text-white"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold tracking-wide bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    ENSPIRE INTRO STUDIO
+                </h1>
+                <p class="text-xs text-slate-400">Trình dựng Video Intro Cinematic 1080p 60FPS</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-xs px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-full font-medium border border-emerald-500/20 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Công nghệ Ultra Bloom Active
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Video Player & Controls (7 Cols) -->
+        <div class="lg:col-span-7 flex flex-col space-y-4">
+            <!-- Video Container -->
+            <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-slate-800 flex items-center justify-center" id="videoViewport">
+                <!-- Canvas where animation runs -->
+                <canvas id="introCanvas" class="w-full h-full object-contain cursor-pointer"></canvas>
+            </div>
+
+            <!-- Playback Control Bar -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-2 w-full md:w-auto justify-start">
+                    <button id="btnPlay" class="w-12 h-12 rounded-lg bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition flex items-center justify-center text-lg text-white shadow-lg shadow-indigo-600/20" title="Phát Intro">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                    <button id="btnReplay" class="w-12 h-12 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 transition flex items-center justify-center text-lg text-slate-300" title="Phát lại">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <!-- Progress Bar -->
+                    <div class="flex-1 min-w-[120px] mx-2">
+                        <div class="flex justify-between text-xs text-slate-400 mb-1">
+                            <span id="currentTime">0.0s</span>
+                            <span id="totalDuration">5.0s</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden relative cursor-pointer" id="progressBarContainer">
+                            <div id="progressBar" class="bg-indigo-500 h-full w-0 transition-all duration-75"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Action Buttons -->
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <!-- Export MP4 -->
+                    <button id="btnExportMP4" class="flex-1 md:flex-none px-6 h-12 rounded-lg bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-95 active:scale-95 transition flex items-center justify-center gap-2 font-bold text-white shadow-lg shadow-indigo-600/30">
+                        <i class="fa-solid fa-circle-down text-base animate-bounce"></i>
+                        <span>Tải video Ultra HD (60FPS)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tips Banner -->
+            <div class="bg-indigo-950/40 border border-indigo-900/50 rounded-xl p-4 flex items-start gap-3">
+                <i class="fa-solid fa-wand-magic-sparkles text-indigo-400 mt-1"></i>
+                <div class="text-sm text-indigo-300">
+                    <p class="font-semibold">Công nghệ xuất hạt Cinematic 60FPS:</p>
+                    <p class="text-xs text-indigo-400/90 mt-0.5">Đã nâng cấp băng thông video lên **30,000,000 bps** và sử dụng `requestAnimationFrame` để đồng bộ hóa chính xác từng khung hình, triệt tiêu hoàn toàn hiện tượng mờ nhòe và delay!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Control Panel (5 Cols) -->
+        <div class="lg:col-span-5 flex flex-col space-y-6 bg-slate-900 border border-slate-800 rounded-2xl p-6 overflow-y-auto max-h-[calc(100vh-160px)]">
+            <div>
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-indigo-400"></i> Bảng cấu hình Intro
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Tạo phong cách, màu sắc, phông chữ và nhạc nền</p>
+            </div>
+
+            <hr class="border-slate-800">
+
+            <!-- Tab 1: Animation Style -->
+            <div class="space-y-3">
+                <label class="text-sm font-semibold text-slate-300 block">1. Chủ đề chuyển động mới</label>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button data-theme="spark" class="theme-btn border-2 border-indigo-500 bg-indigo-950/20 text-indigo-300 px-3 py-3 rounded-xl text-left transition hover:bg-indigo-950/30 flex flex-col justify-between h-24">
+                        <i class="fa-solid fa-star-of-david text-xl"></i>
+                        <div>
+                            <p class="font-bold text-xs">Vortex Bloom (Mới)</p>
+                            <p class="text-[10px] text-indigo-400">Hút xoáy tích tụ & Bùng nổ</p>
+                        </div>
+                    </button>
+                    <button data-theme="cosmic" class="theme-btn border-2 border-slate-800 bg-slate-800/20 text-slate-400 px-3 py-3 rounded-xl text-left transition hover:bg-slate-800/40 flex flex-col justify-between h-24">
+                        <i class="fa-solid fa-user-astronaut text-xl"></i>
+                        <div>
+                            <p class="font-bold text-xs">Tinh vân Vũ trụ</p>
+                            <p class="text-[10px] text-slate-500">Mây bụi không gian sâu</p>
+                        </div>
+                    </button>
+                    <button data-theme="glitch" class="theme-btn border-2 border-slate-800 bg-slate-800/20 text-slate-400 px-3 py-3 rounded-xl text-left transition hover:bg-slate-800/40 flex flex-col justify-between h-24">
+                        <i class="fa-solid fa-bolt text-xl"></i>
+                        <div>
+                            <p class="font-bold text-xs">RGB Glitch Cyber</p>
+                            <p class="text-[10px] text-slate-500">Tách màu kỹ thuật số</p>
+                        </div>
+                    </button>
+                    <button data-theme="playful" class="theme-btn border-2 border-slate-800 bg-slate-800/20 text-slate-400 px-3 py-3 rounded-xl text-left transition hover:bg-slate-800/40 flex flex-col justify-between h-24">
+                        <i class="fa-solid fa-cloud-sun text-xl"></i>
+                        <div>
+                            <p class="font-bold text-xs">Liquid Wave</p>
+                            <p class="text-[10px] text-slate-500">Bong bóng nước đàn hồi</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Custom Text -->
+            <div class="space-y-4">
+                <label class="text-sm font-semibold text-slate-300 block">2. Tùy chỉnh Nội dung</label>
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-xs text-slate-400 block mb-1">Tên thương hiệu chính</span>
+                        <input type="text" id="brandText" value="enspire" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-quote-left text-slate-500 group-focus-within:text-indigo-400 transition-colors duration-300 text-sm"></i>
+                        </div>
+                        <input type="text" id="sloganText" value="CHẮP CÁNH CHO TRÍ TUỆ VIỆT VƯƠN XA" 
+                            class="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm font-semibold text-white tracking-widest placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 hover:border-slate-700 hover:bg-slate-900/80 shadow-sm backdrop-blur-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Style Settings -->
+            <div class="space-y-4">
+                <label class="text-sm font-semibold text-slate-300 block">3. Thiết kế & Hiệu ứng rực rỡ</label>
+                
+                <!-- Background Color Selection -->
+                <div>
+                    <span class="text-xs text-slate-400 block mb-2">Màu nền chủ đạo</span>
+                    <div class="flex items-center space-x-3">
+                        <button class="bg-picker w-8 h-8 rounded-full border border-white/20 relative" style="background: #0f172a;" data-color="#0f172a">
+                            <span class="absolute inset-0.5 rounded-full border border-indigo-500 flex items-center justify-center text-[10px]"><i class="fa-solid fa-check"></i></span>
+                        </button>
+                        <button class="bg-picker w-8 h-8 rounded-full border border-white/20" style="background: #000000;" data-color="#000000"></button>
+                        <button class="bg-picker w-8 h-8 rounded-full border border-white/20" style="background: #1e1b4b;" data-color="#1e1b4b"></button>
+                        <button class="bg-picker w-8 h-8 rounded-full border border-white/20" style="background: #1c1917;" data-color="#1c1917"></button>
+                        <div class="flex-1">
+                            <input type="color" id="customBgColor" value="#0f172a" class="w-full bg-transparent h-8 p-0 border-0 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Particle density -->
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span>Số lượng hạt bụi ánh sáng</span>
+                        <span id="particleVal">100 hạt (Nâng cao)</span>
+                    </div>
+                    <input type="range" id="particleCount" min="0" max="250" value="100" class="w-full accent-indigo-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Glow Intensisty -->
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span>Độ Bloom rực rỡ (Super Glow)</span>
+                        <span id="glowVal">Sáng rực</span>
+                    </div>
+                    <input type="range" id="glowIntensity" min="0" max="3" step="1" value="3" class="w-full accent-indigo-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Tab 4: Sound Settings -->
+            <div class="space-y-3">
+                <label class="text-sm font-semibold text-slate-300 block">4. Âm thanh Intro</label>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-3 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800 cursor-pointer">
+                        <input type="radio" name="soundtrack" value="classic" checked class="accent-indigo-500">
+                        <div>
+                            <p class="text-xs font-semibold text-white">Khởi tạo Hiện đại (Swoosh + Chime)</p>
+                            <p class="text-[10px] text-slate-400">Tiếng vút âm thanh theo sau là chuông ngân trong trẻo</p>
+                        </div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800 cursor-pointer">
+                        <input type="radio" name="soundtrack" value="cosmic" class="accent-indigo-500">
+                        <div>
+                            <p class="text-xs font-semibold text-white">Vũ trụ Không gian (Deep Drone + Synth Pad)</p>
+                            <p class="text-[10px] text-slate-400">Âm trầm sâu thẳm cùng tiếng vang viễn tưởng</p>
+                        </div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800 cursor-pointer">
+                        <input type="radio" name="soundtrack" value="glitch" class="accent-indigo-500">
+                        <div>
+                            <p class="text-xs font-semibold text-white">Nhịp điệu Số (Cyber Sweep & Zap)</p>
+                            <p class="text-[10px] text-slate-400">Xung điện tử sắc nét thích hợp chủ đề kỹ thuật số</p>
+                        </div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800 cursor-pointer">
+                        <input type="radio" name="soundtrack" value="none" class="accent-indigo-500">
+                        <div>
+                            <p class="text-xs font-semibold text-white">Tắt âm thanh (Mute)</p>
+                            <p class="text-[10px] text-slate-400">Hoàn toàn im lặng</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Logo Source Option -->
+            <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800/80 space-y-2">
+                <span class="text-xs font-semibold text-slate-300 block">Đổi tệp Logo riêng của bạn:</span>
+                <p class="text-[10px] text-slate-400">Nếu bạn muốn thử nghiệm với tệp hình ảnh logo khác, hãy tải lên tại đây:</p>
+                <div class="flex items-center space-x-2">
+                    <label class="flex-1 bg-slate-800 hover:bg-slate-700 transition px-3 py-2 rounded-lg text-xs text-center font-medium cursor-pointer text-indigo-400 border border-dashed border-indigo-500/30">
+                        <i class="fa-solid fa-upload mr-1"></i> Tải lên hình ảnh Logo
+                        <input type="file" id="logoUpload" accept="image/*" class="hidden">
+                    </label>
+                    <button id="btnResetLogo" class="p-2 bg-slate-900 border border-slate-800 rounded-lg hover:text-red-400 text-slate-400 text-xs transition" title="Khôi phục Logo Enspire">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div>
+            © 2026 <strong class="text-slate-300">Enspire Intro Studio</strong>. Công cụ hỗ trợ sáng tạo nội dung số chuyên nghiệp.
+        </div>
+        <div class="flex items-center space-x-4">
+            <span>Sử dụng HTML5 Canvas & Web Audio API (60FPS Optimized)</span>
+        </div>
+    </footer>
+
+    <!-- Rendering Modal Dialog (After Effects Style) -->
+    <div id="renderModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center hidden">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-md w-full mx-4 shadow-2xl text-center space-y-6">
+            <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+                <!-- Glowing Spinning Ring -->
+                <div class="absolute inset-0 rounded-full border-4 border-slate-800"></div>
+                <div class="absolute inset-0 rounded-full border-4 border-t-indigo-500 animate-spin"></div>
+                <i class="fa-solid fa-clapperboard text-3xl text-indigo-400 animate-pulse"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white tracking-wide">DỰNG PHIM ĐIỆN ẢNH (HD 1080P 60FPS)</h3>
+                <p class="text-xs text-slate-400 mt-1">Đang render từng điểm ảnh chuẩn xác không mất khung hình</p>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs font-semibold text-indigo-400">
+                    <span id="renderProgressText">Khung hình: 0 / 300</span>
+                    <span id="renderPercent">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+                    <div id="renderProgressBar" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full w-0 transition-all duration-75"></div>
+                </div>
+            </div>
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+                Hệ thống đang xuất trực tiếp từng điểm ảnh ở độ phân giải gốc **1920x1080** với băng thông cực cao **30 Mbps** và **60 FPS**. Quá trình này sử dụng requestAnimationFrame để đồng bộ hóa hoàn hảo, cam kết video xuất ra sắc nét 100% và không bị delay.
+            </p>
+        </div>
+    </div>
+
+    <!-- Custom Toast Notification System -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 space-y-2 z-50"></div>
+
+    <script>
+        // Setup Web Audio API and Variables
+        let audioCtx = null;
+        let audioDestination = null;
+        let animationFrameId = null;
+        
+        // Canvas Setup
+        const canvas = document.getElementById('introCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Define standard canvas size for HD video intro
+        canvas.width = 1920;
+        canvas.height = 1080;
+
+        // Force High-quality rendering properties on context
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        // Custom Variables / Configurations
+        const config = {
+            theme: 'spark', // spark, cosmic, glitch, playful
+            brand: 'enspire',
+            slogan: 'CHẮP CÁNH CHO TRÍ TUỆ VIỆT VƯƠN XA',
+            bgColor: '#0f172a',
+            particleCount: 100,
+            glowIntensity: 3,
+            soundtrack: 'classic',
+            customLogo: null, // Holds HTML Image element if uploaded
+            duration: 7000, // Duration in milliseconds (5s)
+            state: 'idle', // idle, playing, rendering
+            startTime: 0,
+            currentTime: 0,
+        };
+
+        // Brand colors (Enspire original identity)
+        const colors = {
+            yellow: '#f3b71b',
+            orange: '#e17c24',
+            green: '#8ec448',
+            blue: '#39b4e5',
+            purple: '#8b7ab6',
+            brandText: '#2f2e7c'
+        };
+
+        // Particles for animation background
+        let particles = [];
+
+        // Toast Helper
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl transition-all duration-300 transform translate-y-2 opacity-0`;
+            
+            if (type === 'success') {
+                toast.className += ' bg-emerald-950/95 border-emerald-800 text-emerald-300';
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> <span class="text-sm font-medium">${message}</span>`;
+            } else if (type === 'error') {
+                toast.className += ' bg-red-950/95 border-red-800 text-red-300';
+                toast.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-400"></i> <span class="text-sm font-medium">${message}</span>`;
+            } else {
+                toast.className += ' bg-indigo-950/95 border-indigo-800 text-indigo-300';
+                toast.innerHTML = `<i class="fa-solid fa-info text-indigo-400"></i> <span class="text-sm font-medium">${message}</span>`;
+            }
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Particle System Init (Supports Vortex Spiral behavior)
+        function initParticles() {
+            particles = [];
+            const count = parseInt(config.particleCount);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            for (let i = 0; i < count; i++) {
+                // Random angle and distance for vortex gathering feel
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 800 + 400; // start far away
+
+                particles.push({
+                    x: centerX + Math.cos(angle) * distance,
+                    y: centerY + Math.sin(angle) * distance,
+                    originX: centerX,
+                    originY: centerY,
+                    angle: angle,
+                    distance: distance,
+                    size: Math.random() * 5 + 1.5,
+                    speed: Math.random() * 1.5 + 0.8,
+                    color: Object.values(colors)[Math.floor(Math.random() * 5)],
+                    alpha: Math.random() * 0.7 + 0.3,
+                    spin: (Math.random() - 0.5) * 0.08,
+                    orbitRadius: Math.random() * 40 + 10
+                });
+            }
+        }
+
+        // Trigger Synth Sound Effects via Web Audio API
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            if (!audioDestination) {
+                audioDestination = audioCtx.createGain();
+                audioDestination.connect(audioCtx.destination);
+            }
+        }
+
+        function playIntroSound() {
+            if (config.soundtrack === 'none') return;
+            initAudio();
+
+            const now = audioCtx.currentTime;
+            const dest = audioDestination; // Route to master gain (which goes to speakers AND recorder)
+
+            if (config.soundtrack === 'classic') {
+                const swooshOsc = audioCtx.createOscillator();
+                const swooshGain = audioCtx.createGain();
+                swooshOsc.type = 'triangle';
+                swooshOsc.frequency.setValueAtTime(100, now);
+                swooshOsc.frequency.exponentialRampToValueAtTime(1200, now + 1.2);
+                
+                swooshGain.gain.setValueAtTime(0.01, now);
+                swooshGain.gain.linearRampToValueAtTime(0.3, now + 0.6);
+                swooshGain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(2000, now);
+                filter.Q.setValueAtTime(1, now);
+
+                swooshOsc.connect(filter);
+                filter.connect(swooshGain);
+                swooshGain.connect(dest);
+
+                swooshOsc.start(now);
+                swooshOsc.stop(now + 1.5);
+
+                const chimeDelay = 1.3;
+                const frequencies = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                frequencies.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + chimeDelay + (idx * 0.08));
+                    
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.setValueAtTime(0, now + chimeDelay + (idx * 0.08));
+                    gain.gain.linearRampToValueAtTime(0.12, now + chimeDelay + (idx * 0.08) + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + chimeDelay + (idx * 0.08) + 2.0);
+                    
+                    osc.connect(gain);
+                    gain.connect(dest);
+                    
+                    osc.start(now);
+                    osc.stop(now + chimeDelay + 2.5);
+                });
+
+            } else if (config.soundtrack === 'cosmic') {
+                const droneOsc = audioCtx.createOscillator();
+                const droneGain = audioCtx.createGain();
+                droneOsc.type = 'sawtooth';
+                droneOsc.frequency.setValueAtTime(65.41, now);
+                
+                droneGain.gain.setValueAtTime(0.001, now);
+                droneGain.gain.linearRampToValueAtTime(0.2, now + 1.5);
+                droneGain.gain.exponentialRampToValueAtTime(0.001, now + 4.5);
+
+                const spaceFilter = audioCtx.createBiquadFilter();
+                spaceFilter.type = 'lowpass';
+                spaceFilter.frequency.setValueAtTime(300, now);
+                spaceFilter.frequency.exponentialRampToValueAtTime(800, now + 2);
+                spaceFilter.frequency.exponentialRampToValueAtTime(100, now + 4.5);
+
+                droneOsc.connect(spaceFilter);
+                spaceFilter.connect(droneGain);
+                droneGain.connect(dest);
+
+                droneOsc.start(now);
+                droneOsc.stop(now + 5.0);
+
+                const starOsc = audioCtx.createOscillator();
+                const starGain = audioCtx.createGain();
+                starOsc.type = 'triangle';
+                starOsc.frequency.setValueAtTime(880, now + 1.5);
+                starOsc.frequency.exponentialRampToValueAtTime(1760, now + 3);
+
+                starGain.gain.setValueAtTime(0, now);
+                starGain.gain.setValueAtTime(0, now + 1.5);
+                starGain.gain.linearRampToValueAtTime(0.08, now + 2.0);
+                starGain.gain.exponentialRampToValueAtTime(0.001, now + 4.5);
+
+                starOsc.connect(starGain);
+                starGain.connect(dest);
+
+                starOsc.start(now);
+                starOsc.stop(now + 5.0);
+
+            } else if (config.soundtrack === 'glitch') {
+                const glitchSeq = [
+                    { time: 0.1, freq: 150, dur: 0.08 },
+                    { time: 0.2, freq: 80, dur: 0.08 },
+                    { time: 0.6, freq: 400, dur: 0.05 },
+                    { time: 0.8, freq: 600, dur: 0.05 },
+                    { time: 1.1, freq: 200, dur: 0.1 },
+                    { time: 1.3, freq: 1200, dur: 0.05 },
+                    { time: 1.4, freq: 1500, dur: 0.1 },
+                    { time: 1.5, freq: 100, dur: 0.4 },
+                ];
+
+                glitchSeq.forEach(step => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = Math.random() > 0.5 ? 'square' : 'sawtooth';
+                    osc.frequency.setValueAtTime(step.freq, now + step.time);
+                    
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.setValueAtTime(0, now + step.time);
+                    gain.gain.linearRampToValueAtTime(0.12, now + step.time + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + step.time + step.dur);
+                    
+                    osc.connect(gain);
+                    gain.connect(dest);
+                    
+                    osc.start(now);
+                    osc.stop(now + step.time + step.dur + 0.1);
+                });
+
+                const bufferSize = audioCtx.sampleRate * 1.5;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noiseNode = audioCtx.createBufferSource();
+                noiseNode.buffer = buffer;
+
+                const noiseFilter = audioCtx.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.setValueAtTime(1000, now + 1.4);
+                noiseFilter.frequency.exponentialRampToValueAtTime(100, now + 2.5);
+
+                const noiseGain = audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(0, now);
+                noiseGain.gain.setValueAtTime(0, now + 1.3);
+                noiseGain.gain.linearRampToValueAtTime(0.15, now + 1.4);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+
+                noiseNode.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(dest);
+
+                noiseNode.start(now + 1.3);
+            }
+        }
+
+        // Draw Premium Background
+        function drawBackground() {
+            ctx.fillStyle = config.bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Layered vignette with smooth glow center
+            const grad = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, canvas.width / 12,
+                canvas.width / 2, canvas.height / 2, canvas.width / 1.3
+            );
+            grad.addColorStop(0, 'rgba(30, 27, 75, 0.25)'); // Dark indigo hint in the core
+            grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.4)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0.9)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // ADVANCED: Dynamic Vortex & Shockwave Particle Behaviours
+        function drawParticles(progress) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 - 40;
+
+            particles.forEach(p => {
+                let x, y;
+                let activeAlpha = p.alpha;
+
+                if (progress < 0.3) {
+                    // Phase 1: Vortex gathering spiraling in
+                    const t = progress / 0.3; // 0 -> 1
+                    const spiralAngle = p.angle + (t * Math.PI * 4); // spin multiple times
+                    const curDist = p.distance * (1 - t) + p.orbitRadius * t; // collapse to core
+                    
+                    x = centerX + Math.cos(spiralAngle) * curDist;
+                    y = centerY + Math.sin(spiralAngle) * curDist;
+                    activeAlpha = p.alpha * t; // fade in while collapsing
+                } else {
+                    // Phase 2: Shockwave explosion at t >= 0.3
+                    const t = (progress - 0.3) / 0.7; // 0 -> 1
+                    const expAngle = p.angle;
+                    const curDist = p.orbitRadius + (t * 1200 * p.speed); // blast out outward at custom speed
+                    
+                    x = centerX + Math.cos(expAngle) * curDist;
+                    y = centerY + Math.sin(expAngle) * curDist;
+                    activeAlpha = p.alpha * (1 - t); // fade out slowly during blast
+                }
+
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(p.angle + progress * 5);
+
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = Math.max(0, Math.min(activeAlpha, 1));
+                
+                // Extra bloom blending for glowing specs
+                if (config.glowIntensity > 1) {
+                    ctx.shadowBlur = config.glowIntensity * 5;
+                    ctx.shadowColor = p.color;
+                }
+
+                // Draw sparkle shape
+                ctx.beginPath();
+                ctx.moveTo(0, -p.size);
+                ctx.lineTo(p.size * 0.3, -p.size * 0.3);
+                ctx.lineTo(p.size, 0);
+                ctx.lineTo(p.size * 0.3, p.size * 0.3);
+                ctx.lineTo(0, p.size);
+                ctx.lineTo(-p.size * 0.3, p.size * 0.3);
+                ctx.lineTo(-p.size, 0);
+                ctx.lineTo(-p.size * 0.3, -p.size * 0.3);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            });
+
+            ctx.globalAlpha = 1.0; // Reset
+        }
+
+        // Draw Enspire Spark Icon with Gorgeous Shaded 3D Gradients
+        function drawSparkIcon(x, y, scale, progress, customRotation = 0, themeModifier = {}) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+            ctx.rotate(customRotation);
+
+            // Petal arrangements with multi-stop premium gradients
+            const petals = [
+                { 
+                    angle: -1.35, len: 145, rx: 18, delay: 0.0,
+                    gradStart: '#ffe066', gradEnd: '#f3b71b' // Yellow
+                },
+                { 
+                    angle: -0.65, len: 130, rx: 18, delay: 0.15,
+                    gradStart: '#ff9c42', gradEnd: '#e17c24' // Orange
+                },
+                { 
+                    angle: 0.0,   len: 110, rx: 18, delay: 0.3,
+                    gradStart: '#a8e05d', gradEnd: '#8ec448' // Green
+                },
+                { 
+                    angle: 0.6,   len: 85,  rx: 16, delay: 0.45,
+                    gradStart: '#5cd5ff', gradEnd: '#39b4e5' // Blue
+                },
+                { 
+                    angle: 1.25,  len: 70,  rx: 15, delay: 0.6,
+                    gradStart: '#ad9bf5', gradEnd: '#8b7ab6' // Purple
+                }
+            ];
+
+            petals.forEach((p, idx) => {
+                ctx.save();
+                ctx.rotate(p.angle);
+
+                let reveal = 1;
+                if (config.theme === 'spark') {
+                    const localProg = (progress - p.delay) * 1.8;
+                    reveal = Math.min(Math.max(localProg, 0), 1);
+                    reveal = 1 - Math.pow(1 - reveal, 4); // Sleek elastic ease-out
+                } else if (config.theme === 'cosmic') {
+                    reveal = Math.min(Math.max(progress * 1.5, 0), 1);
+                    reveal = Math.sin(reveal * Math.PI / 2);
+                } else if (config.theme === 'glitch') {
+                    reveal = progress > 0.35 ? (Math.random() > 0.12 ? 1 : 0.1) : 0;
+                } else if (config.theme === 'playful') {
+                    reveal = Math.min(Math.max(progress * 1.3, 0), 1);
+                    reveal = Math.sin(reveal * Math.PI * 0.7);
+                }
+
+                // Super bloom glowing layers
+                if (config.glowIntensity > 0) {
+                    ctx.shadowBlur = config.glowIntensity * 14 * reveal;
+                    ctx.shadowColor = p.gradEnd;
+                }
+
+                // Create custom linear gradient for the capsule
+                const grad = ctx.createLinearGradient(0, 0, p.len * reveal, 0);
+                grad.addColorStop(0, p.gradStart);
+                grad.addColorStop(1, p.gradEnd);
+
+                ctx.fillStyle = grad;
+                ctx.globalAlpha = themeModifier.alpha !== undefined ? themeModifier.alpha : 0.95;
+
+                const currentLen = p.len * reveal;
+                const currentWidth = p.rx * 2;
+
+                ctx.beginPath();
+                ctx.roundRect(0, -p.rx, currentLen, currentWidth, p.rx);
+                ctx.fill();
+
+                ctx.restore();
+            });
+
+            // Trademark icon "R"
+            ctx.save();
+            ctx.fillStyle = colors.yellow;
+            ctx.font = "bold 16px Arial";
+            ctx.fillText("®", 110, -120);
+            ctx.restore();
+
+            ctx.restore();
+            ctx.globalCompositeOperation = 'source-over'; // Reset
+        }
+
+        // Draw Enspire Text with Animated Metallic Shine Sweeping Over
+        function drawEnspireText(x, y, scale, progress) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+
+            // Baseline dynamic gradient
+            const textWidth = 600;
+            const textGrad = ctx.createLinearGradient(0, 0, textWidth, 0);
+
+            // Shimmer position sweep calculation
+            let shimmerPos = (progress - 0.35) * 2.2; // sweep speed & delay
+            
+            if (shimmerPos > 0 && shimmerPos < 1.2) {
+                // Shiny metallic chrome sweeping highlight
+                textGrad.addColorStop(0, '#ffffff');
+                textGrad.addColorStop(Math.max(0, shimmerPos - 0.2), '#ffffff');
+                textGrad.addColorStop(Math.min(1, shimmerPos), '#aeeeff'); // Blueish flare core
+                textGrad.addColorStop(Math.min(1, shimmerPos + 0.1), '#ffffff');
+                textGrad.addColorStop(1, '#ffffff');
+            } else {
+                textGrad.addColorStop(0, '#ffffff');
+                textGrad.addColorStop(1, '#ffffff');
+            }
+
+            // Fallback for white themes
+            if (config.bgColor === '#ffffff' || config.bgColor === '#f8fafc') {
+                textGrad.addColorStop(0, colors.brandText);
+                textGrad.addColorStop(1, colors.brandText);
+            }
+            
+            ctx.font = "900 160px 'Comfortaa', sans-serif";
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+
+            // CHROMATIC ABERRATION: Special Red-Blue channel separation in Glitch Theme
+            if (config.theme === 'glitch' && progress > 0.3 && Math.random() > 0.72) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                
+                // Magenta-Red shift
+                ctx.fillStyle = 'rgba(255, 0, 100, 0.75)';
+                ctx.fillText(config.brand, -8 + (Math.random() * 6), (Math.random() * 5));
+                
+                // Cyan shift
+                ctx.fillStyle = 'rgba(0, 255, 230, 0.75)';
+                ctx.fillText(config.brand, 8 + (Math.random() * 6), -(Math.random() * 5));
+                ctx.restore();
+            }
+
+            const textYOffset = (1 - Math.min(progress * 1.5, 1)) * 15;
+            ctx.globalAlpha = Math.min(Math.max((progress - 0.25) * 2, 0), 1);
+            
+            ctx.shadowBlur = config.glowIntensity * 8;
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+            ctx.fillStyle = textGrad;
+            ctx.fillText(config.brand, 0, textYOffset);
+
+            ctx.restore();
+            ctx.globalAlpha = 1.0;
+        }
+
+        // Draw Custom Slogan with ultra smooth tracking
+        function drawSlogan(x, y, progress) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            // Subtle liquid elastic bubble wobble in playful mode
+            if (config.theme === 'playful') {
+                const bubble = Math.sin(progress * Math.PI * 2) * 3;
+                ctx.translate(0, bubble);
+            }
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            let reveal = Math.min(Math.max((progress - 0.5) * 2.2, 0), 1);
+            ctx.globalAlpha = reveal;
+
+            const baseText = config.slogan;
+            ctx.font = "700 36px 'Inter', sans-serif";
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            if (config.bgColor === '#ffffff' || config.bgColor === '#f8fafc') {
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+            }
+            ctx.letterSpacing = "12px";
+            
+            ctx.shadowBlur = reveal * 12;
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.15)';
+            
+            const lineWidth = 160 * reveal;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            if (config.bgColor === '#ffffff' || config.bgColor === '#f8fafc') {
+                ctx.strokeStyle = 'rgba(15, 23, 42, 0.25)';
+            }
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-lineWidth/2, -20);
+            ctx.lineTo(lineWidth/2, -20);
+            ctx.stroke();
+
+            ctx.fillText(baseText, 5, 0);
+            ctx.restore();
+        }
+
+        // Main Draw Engine for Theme 1: Vortex Bloom (Standard / Spark)
+        function renderSparkTheme(progress) {
+            drawBackground();
+            drawParticles(progress);
+
+            const introScale = 0.85 + (Math.sin(progress * Math.PI * 0.1) * 0.05);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 - 40;
+
+            if (config.customLogo) {
+                ctx.save();
+                ctx.globalAlpha = Math.min(progress * 1.5, 1);
+                const revealScale = 0.9 + (Math.sin(progress * Math.PI * 0.1) * 0.1);
+                ctx.translate(centerX, centerY);
+                ctx.scale(revealScale * 1.2, revealScale * 1.2);
+                
+                const w = config.customLogo.width;
+                const h = config.customLogo.height;
+                const maxDim = 450;
+                let finalW = w;
+                let finalH = h;
+                if (w > maxDim || h > maxDim) {
+                    const ratio = Math.min(maxDim / w, maxDim / h);
+                    finalW = w * ratio;
+                    finalH = h * ratio;
+                }
+                ctx.drawImage(config.customLogo, -finalW/2, -finalH/2, finalW, finalH);
+                ctx.restore();
+            } else {
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.scale(introScale, introScale);
+
+                drawEnspireText(-260, -10, 1.0, progress);
+                drawSparkIcon(190, 0, 1.1, progress, 0);
+
+                ctx.restore();
+            }
+
+            drawSlogan(canvas.width / 2, canvas.height / 2 + 160, progress);
+
+            // Epic cinematic concentric multi-shockwave expansion at core climax
+            if (progress > 0.28 && progress < 0.68) {
+                const burstProg = (progress - 0.28) / 0.4;
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                
+                // Ring 1 (Vibrant blue)
+                ctx.strokeStyle = `rgba(57, 180, 229, ${0.8 * (1 - burstProg)})`;
+                ctx.lineWidth = 8 * (1 - burstProg);
+                ctx.beginPath();
+                ctx.arc(centerX + 190, centerY, burstProg * 350, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Ring 2 (Golden aura, slightly slower)
+                ctx.strokeStyle = `rgba(243, 183, 27, ${0.5 * (1 - burstProg)})`;
+                ctx.lineWidth = 4 * (1 - burstProg);
+                ctx.beginPath();
+                ctx.arc(centerX + 190, centerY, burstProg * 250, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+        }
+
+        // Main Draw Engine for Theme 2: Cosmic deep-space nebula
+        function renderCosmicTheme(progress) {
+            ctx.fillStyle = config.bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Gaseous animated cosmic cloud spirals
+            for (let i = 0; i < 3; i++) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                const nebulaX = canvas.width / 2 + Math.cos(progress * Math.PI * 0.5 + i * 2) * 150;
+                const nebulaY = canvas.height / 2 + Math.sin(progress * Math.PI * 0.5 + i * 2) * 100;
+                
+                const cloudGrad = ctx.createRadialGradient(
+                    nebulaX, nebulaY, 10,
+                    nebulaX, nebulaY, 500
+                );
+                
+                if (i === 0) {
+                    cloudGrad.addColorStop(0, 'rgba(57, 180, 229, 0.18)'); // Cyan core
+                } else if (i === 1) {
+                    cloudGrad.addColorStop(0, 'rgba(139, 122, 182, 0.12)'); // Indigo core
+                } else {
+                    cloudGrad.addColorStop(0, 'rgba(225, 124, 36, 0.08)'); // Gold rim
+                }
+                cloudGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                
+                ctx.fillStyle = cloudGrad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            }
+
+            drawParticles(progress);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 - 40;
+            const introScale = 0.9 + (progress * 0.08);
+
+            const flareX = (progress * canvas.width * 1.5) - (canvas.width * 0.25);
+            const flareY = (progress * canvas.height * 1.5) - (canvas.height * 0.25);
+
+            if (config.customLogo) {
+                ctx.save();
+                ctx.globalAlpha = Math.min(progress * 2, 1);
+                ctx.translate(centerX, centerY);
+                ctx.scale(introScale * 1.1, introScale * 1.1);
+                const w = config.customLogo.width;
+                const h = config.customLogo.height;
+                const maxDim = 450;
+                let finalW = w;
+                let finalH = h;
+                if (w > maxDim || h > maxDim) {
+                    const ratio = Math.min(maxDim / w, maxDim / h);
+                    finalW = w * ratio;
+                    finalH = h * ratio;
+                }
+                ctx.drawImage(config.customLogo, -finalW/2, -finalH/2, finalW, finalH);
+                ctx.restore();
+            } else {
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.scale(introScale, introScale);
+
+                drawEnspireText(-260, -10, 1.0, progress);
+                drawSparkIcon(190, 0, 1.1, progress, 0);
+
+                ctx.restore();
+            }
+
+            drawSlogan(canvas.width / 2, canvas.height / 2 + 160, progress);
+
+            // Premium lens flare sweep shine overlay
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+            const flareGrad = ctx.createRadialGradient(flareX, flareY, 0, flareX, flareY, 400);
+            flareGrad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+            flareGrad.addColorStop(0.1, 'rgba(243, 183, 27, 0.5)'); // Golden flare ring
+            flareGrad.addColorStop(0.3, 'rgba(57, 180, 229, 0.15)'); // Blue fringe
+            flareGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = flareGrad;
+            ctx.beginPath();
+            ctx.arc(flareX, flareY, 400, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Main Draw Engine for Theme 3: Cyber Glitch Chromatic
+        function renderGlitchTheme(progress) {
+            drawBackground();
+            
+            // Random digital horizontal strip aberrations
+            if (progress > 0.15 && progress < 0.85 && Math.random() > 0.7) {
+                ctx.save();
+                for (let i = 0; i < 8; i++) {
+                    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(57, 180, 229, 0.35)' : 'rgba(225, 124, 36, 0.35)';
+                    ctx.fillRect(
+                        Math.random() * canvas.width, 
+                        Math.random() * canvas.height, 
+                        Math.random() * 450 + 50, 
+                        Math.random() * 25 + 2
+                    );
+                }
+                ctx.restore();
+            }
+
+            drawParticles(progress);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 - 40;
+            let scaleOffset = 0;
+
+            // Chaotic camera jumps
+            if (progress > 0.3 && progress < 0.7 && Math.random() > 0.8) {
+                ctx.translate((Math.random() - 0.5) * 22, (Math.random() - 0.5) * 22);
+                scaleOffset = (Math.random() - 0.5) * 0.08;
+            }
+
+            const introScale = 0.95 + scaleOffset;
+
+            if (config.customLogo) {
+                ctx.save();
+                ctx.globalAlpha = Math.min(progress * 2, 1);
+                ctx.translate(centerX, centerY);
+                ctx.scale(introScale * 1.1, introScale * 1.1);
+                const w = config.customLogo.width;
+                const h = config.customLogo.height;
+                const maxDim = 450;
+                let finalW = w;
+                let finalH = h;
+                if (w > maxDim || h > maxDim) {
+                    const ratio = Math.min(maxDim / w, maxDim / h);
+                    finalW = w * ratio;
+                    finalH = h * ratio;
+                }
+                ctx.drawImage(config.customLogo, -finalW/2, -finalH/2, finalW, finalH);
+                ctx.restore();
+            } else {
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.scale(introScale, introScale);
+
+                // High glitch glow factor
+                if (config.glowIntensity > 0 && Math.random() > 0.6) {
+                    ctx.shadowBlur = 50;
+                    ctx.shadowColor = colors.purple;
+                }
+
+                drawEnspireText(-260, -10, 1.0, progress);
+                drawSparkIcon(190, 0, 1.1, progress, 0);
+
+                ctx.restore();
+            }
+
+            drawSlogan(canvas.width / 2, canvas.height / 2 + 160, progress);
+        }
+
+        // Main Draw Engine for Theme 4: Playful & Soft Liquid Wave
+        function renderPlayfulTheme(progress) {
+            ctx.fillStyle = config.bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const playfulGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            playfulGrad.addColorStop(0, 'rgba(139, 122, 182, 0.22)');
+            playfulGrad.addColorStop(1, 'rgba(57, 180, 229, 0.12)');
+            ctx.fillStyle = playfulGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawParticles(progress);
+
+            // Wobbly jelly fluid motion physics simulation
+            const waveY = Math.sin(progress * Math.PI * 2) * 15;
+            const scaleWaveX = 0.95 + (Math.sin(progress * Math.PI * 2) * 0.04);
+            const scaleWaveY = 0.95 - (Math.sin(progress * Math.PI * 2) * 0.04);
+
+            const centerX = canvas.width / 2;
+            const centerY = (canvas.height / 2 - 40) + waveY;
+
+            if (config.customLogo) {
+                ctx.save();
+                ctx.globalAlpha = Math.min(progress * 2, 1);
+                ctx.translate(centerX, centerY);
+                ctx.scale(scaleWaveX * 1.1, scaleWaveY * 1.1);
+                const w = config.customLogo.width;
+                const h = config.customLogo.height;
+                const maxDim = 450;
+                let finalW = w;
+                let finalH = h;
+                if (w > maxDim || h > maxDim) {
+                    const ratio = Math.min(maxDim / w, maxDim / h);
+                    finalW = w * ratio;
+                    finalH = h * ratio;
+                }
+                ctx.drawImage(config.customLogo, -finalW/2, -finalH/2, finalW, finalH);
+                ctx.restore();
+            } else {
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.scale(scaleWaveX, scaleWaveY);
+
+                drawEnspireText(-260, -10, 1.0, progress);
+
+                const spin = (1 - progress) * 0.4;
+                drawSparkIcon(190, 0, 1.1, progress, spin);
+
+                ctx.restore();
+            }
+
+            drawSlogan(canvas.width / 2, canvas.height / 2 + 160, progress);
+        }
+
+        // Unified rendering dispatcher
+        function drawFrame(progress) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const p = Math.min(Math.max(progress, 0), 1);
+
+            switch(config.theme) {
+                case 'cosmic':
+                    renderCosmicTheme(p);
+                    break;
+                case 'glitch':
+                    renderGlitchTheme(p);
+                    break;
+                case 'playful':
+                    renderPlayfulTheme(p);
+                    break;
+                case 'spark':
+                default:
+                    renderSparkTheme(p);
+                    break;
+            }
+        }
+
+        // Animation Loop Control
+        function animateIntro(timestamp) {
+            if (!config.startTime) config.startTime = timestamp;
+            const elapsed = timestamp - config.startTime;
+            config.currentTime = elapsed;
+
+            const progress = elapsed / config.duration;
+
+            drawFrame(progress);
+            updatePlaybackProgress(progress);
+
+            if (elapsed < config.duration && config.state === 'playing') {
+                animationFrameId = requestAnimationFrame(animateIntro);
+            } else {
+                stopPlayback();
+                updatePlaybackProgress(1.0);
+            }
+        }
+
+        function updatePlaybackProgress(progress) {
+            const clamped = Math.min(Math.max(progress, 0), 1);
+            document.getElementById('progressBar').style.width = `${clamped * 100}%`;
+            document.getElementById('currentTime').innerText = `${(clamped * (config.duration / 1000)).toFixed(1)}s`;
+        }
+
+        function startPlayback() {
+            if (config.state === 'playing') {
+                stopPlayback();
+            }
+            if (config.state === 'rendering') return;
+            
+            initParticles();
+            config.startTime = 0;
+            config.state = 'playing';
+            
+            document.getElementById('btnPlay').innerHTML = '<i class="fa-solid fa-pause"></i>';
+            document.getElementById('btnPlay').className = document.getElementById('btnPlay').className.replace('bg-indigo-600', 'bg-amber-600').replace('hover:bg-indigo-500', 'hover:bg-amber-500');
+
+            playIntroSound();
+            animationFrameId = requestAnimationFrame(animateIntro);
+        }
+
+        function stopPlayback() {
+            config.state = 'idle';
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            document.getElementById('btnPlay').innerHTML = '<i class="fa-solid fa-play"></i>';
+            document.getElementById('btnPlay').className = document.getElementById('btnPlay').className.replace('bg-amber-600', 'bg-indigo-600').replace('hover:bg-amber-500', 'hover:bg-indigo-500');
+        }
+
+        // Click on viewport
+        document.getElementById('introCanvas').addEventListener('click', () => {
+            if (config.state === 'idle') {
+                startPlayback();
+            } else {
+                stopPlayback();
+            }
+        });
+
+        // Event Listeners for Player Buttons
+        document.getElementById('btnPlay').addEventListener('click', () => {
+            if (config.state === 'playing') {
+                stopPlayback();
+            } else {
+                startPlayback();
+            }
+        });
+
+        document.getElementById('btnReplay').addEventListener('click', () => {
+            stopPlayback();
+            setTimeout(startPlayback, 100);
+        });
+
+        // Manual scrubbing
+        document.getElementById('progressBarContainer').addEventListener('click', (e) => {
+            if (config.state === 'rendering') return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const percentage = clickX / rect.width;
+            
+            stopPlayback();
+            drawFrame(percentage);
+            updatePlaybackProgress(percentage);
+        });
+
+        // Theme buttons
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.theme-btn').forEach(b => {
+                    b.classList.remove('border-indigo-500', 'bg-indigo-950/20', 'text-indigo-300');
+                    b.classList.add('border-slate-800', 'bg-slate-800/20', 'text-slate-400');
+                });
+
+                const element = e.currentTarget;
+                element.classList.add('border-indigo-500', 'bg-indigo-950/20', 'text-indigo-300');
+                element.classList.remove('border-slate-800', 'bg-slate-800/20', 'text-slate-400');
+
+                config.theme = element.getAttribute('data-theme');
+                drawFrame(0.5);
+                showToast(`Chủ đề mới: ${element.querySelector('.font-bold').innerText}`, 'info');
+            });
+        });
+
+        // Colors
+        document.querySelectorAll('.bg-picker').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.bg-picker').forEach(b => b.innerHTML = '');
+                const target = e.currentTarget;
+                target.innerHTML = `<span class="absolute inset-0.5 rounded-full border border-indigo-500 flex items-center justify-center text-[10px]"><i class="fa-solid fa-check"></i></span>`;
+                config.bgColor = target.getAttribute('data-color');
+                document.getElementById('customBgColor').value = config.bgColor;
+                drawFrame(0.5);
+            });
+        });
+
+        document.getElementById('customBgColor').addEventListener('input', (e) => {
+            config.bgColor = e.target.value;
+            document.querySelectorAll('.bg-picker').forEach(b => b.innerHTML = '');
+            drawFrame(0.5);
+        });
+
+        document.getElementById('brandText').addEventListener('input', (e) => {
+            config.brand = e.target.value;
+            drawFrame(0.5);
+        });
+
+        document.getElementById('sloganText').addEventListener('input', (e) => {
+            config.slogan = e.target.value.toUpperCase();
+            drawFrame(0.5);
+        });
+
+        document.getElementById('particleCount').addEventListener('input', (e) => {
+            config.particleCount = e.target.value;
+            document.getElementById('particleVal').innerText = `${e.target.value} hạt`;
+            initParticles();
+            drawFrame(0.5);
+        });
+
+        document.getElementById('glowIntensity').addEventListener('input', (e) => {
+            config.glowIntensity = parseInt(e.target.value);
+            const labels = ["Tắt", "Mềm", "Vừa", "Sáng rực"];
+            document.getElementById('glowVal').innerText = labels[e.target.value];
+            drawFrame(0.5);
+        });
+
+        document.querySelectorAll('input[name="soundtrack"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                config.soundtrack = e.target.value;
+                initAudio();
+                showToast("Đã cập nhật nhạc nền", "success");
+            });
+        });
+
+        document.getElementById('logoUpload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    config.customLogo = img;
+                    drawFrame(0.5);
+                    showToast("Tải logo thành công!", "success");
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('btnResetLogo').addEventListener('click', () => {
+            if (config.customLogo === null) return;
+            config.customLogo = null;
+            document.getElementById('logoUpload').value = "";
+            drawFrame(0.5);
+            showToast("Đã khôi phục logo gốc", "success");
+        });
+
+
+        // ==========================================
+        // CINEMATIC OFFLINE DETERMINISTIC RENDERING ENGINE (60FPS, 30 Mbps)
+        // ==========================================
+        async function renderAndDownloadMP4() {
+            if (config.state === 'rendering' || config.state === 'playing') {
+                stopPlayback();
+            }
+
+            // Show After Effects style Rendering Modal
+            const renderModal = document.getElementById('renderModal');
+            const renderProgressText = document.getElementById('renderProgressText');
+            const renderPercent = document.getElementById('renderPercent');
+            const renderProgressBar = document.getElementById('renderProgressBar');
+
+            renderModal.classList.remove('hidden');
+            config.state = 'rendering';
+            initParticles();
+            initAudio(); // Ensure audio context is ready
+
+            // Setup offline capture at ultra stable cinematic 60fps
+            const fps = 60;
+            const durationSec = config.duration / 1000;
+            const totalFrames = fps * durationSec; // 300 frames for 5 seconds
+
+            // Setup audio capture to route into the video file
+            const streamDest = audioCtx.createMediaStreamDestination();
+            audioDestination.connect(streamDest); // Route audio to recorder
+
+            const canvasStream = canvas.captureStream(fps);
+            const combinedStream = new MediaStream([
+                ...canvasStream.getVideoTracks(),
+                ...streamDest.stream.getAudioTracks()
+            ]);
+            
+            // Auto detect best high-quality container
+            let selectedMimeType = '';
+            const mimeTypes = [
+                'video/webm;codecs=vp9',
+                'video/webm;codecs=vp8',
+                'video/mp4;codecs=h264',
+                'video/mp4'
+            ];
+            
+            for (const type of mimeTypes) {
+                if (MediaRecorder.isTypeSupported(type)) {
+                    selectedMimeType = type;
+                    break;
+                }
+            }
+
+            // Force 30 Megabits per second (30,000,000) for pristine pixels and zero compress-noise!
+            const recorderOptions = {
+                videoBitsPerSecond: 30000000 
+            };
+            if (selectedMimeType) {
+                recorderOptions.mimeType = selectedMimeType;
+            }
+
+            const recorder = new MediaRecorder(combinedStream, recorderOptions);
+            const chunks = [];
+
+            recorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) {
+                    chunks.push(e.data);
+                }
+            };
+
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: selectedMimeType || 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                const ext = selectedMimeType.includes('mp4') ? 'mp4' : 'webm';
+                a.download = `Enspire_Cinematic_Intro_${config.theme}_${Date.now()}.${ext}`;
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    renderModal.classList.add('hidden');
+                    config.state = 'idle';
+                    audioDestination.disconnect(streamDest); // Clean up audio routing
+                    showToast("Đã tải xuống video Intro chất lượng Ultra HD (60FPS)!", "success");
+                }, 400);
+            };
+
+            // Initiate offline sequential rendering
+            recorder.start();
+            playIntroSound();
+
+            let renderStartTime = null;
+
+            // Use requestAnimationFrame for perfectly synced, lag-free 60FPS rendering
+            function renderLoop(timestamp) {
+                if (!renderStartTime) renderStartTime = timestamp;
+                const elapsed = timestamp - renderStartTime;
+                const progress = Math.min(elapsed / config.duration, 1.0);
+
+                drawFrame(progress);
+                updatePlaybackProgress(progress);
+
+                // Update UI progress meter
+                const currentFrame = Math.round(progress * totalFrames);
+                const percent = Math.round(progress * 100);
+                
+                renderProgressText.innerText = `Khung hình: ${currentFrame} / ${totalFrames}`;
+                renderPercent.innerText = `${percent}%`;
+                renderProgressBar.style.width = `${percent}%`;
+
+                if (progress < 1.0) {
+                    requestAnimationFrame(renderLoop);
+                } else {
+                    // Ensure final frame is drawn and captured
+                    drawFrame(1.0);
+                    updatePlaybackProgress(1.0);
+                    renderProgressText.innerText = `Khung hình: ${totalFrames} / ${totalFrames}`;
+                    renderPercent.innerText = `100%`;
+                    renderProgressBar.style.width = `100%`;
+                    
+                    // Small delay to ensure the last frame is flushed to the recorder
+                    setTimeout(() => {
+                        recorder.stop();
+                    }, 100);
+                }
+            }
+
+            // Start the high-precision render loop
+            requestAnimationFrame(renderLoop);
+        }
+
+        // Bind export button
+        document.getElementById('btnExportMP4').addEventListener('click', () => {
+            renderAndDownloadMP4();
+        });
+
+        // Bootstrapping
+        window.onload = function() {
+            initParticles();
+            drawFrame(0.5);
+            updatePlaybackProgress(0.5);
+        };
+    </script>
+</body>
+</html>
+

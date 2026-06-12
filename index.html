@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thời Khóa Biểu Tiếng Anh</title>
+<title>Time</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -199,7 +199,7 @@ td.activity:hover .edit-icon{opacity:.5;}
   display:flex;justify-content:space-between;align-items:flex-end;gap:3mm;
   margin-top:2mm;
 }
-.footer-note{font-size:7.5pt;color:#aaa;font-weight:600;flex:1;}
+.footer-note{font-size:9pt;color:#aaa;font-weight:600;flex:1;}
 .footer-cheer{text-align:center;flex:1;}
 .cheer-text{font-family:'Baloo 2',sans-serif;font-size:10pt;font-weight:800;color:#764ba2;}
 .footer-mascot{text-align:right;font-size:22pt;line-height:1.2;}
@@ -325,7 +325,9 @@ td.activity:hover .edit-icon{opacity:.5;}
       <div class="school-name" id="hSchool" onclick="editHeader('hSchool','Tên trường / Năm học')" title="Nhấn để sửa">
         ✨ Năm học 2026 ✨
       </div>
-      <div class="main-title">🎓 THỜI KHÓA BIỂU TIẾNG ANH 🎓</div>
+      <div class="main-title"  id="schedule"  onclick="editHeader('schedule','Thời khóa biểu')" title="Nhấn để sửa">
+        🎓 THỜI KHÓA BIỂU TIẾNG ANH 🎓
+      </div>
       <div class="subtitle" id="hSub" onclick="editHeader('hSub','Phụ đề')" title="Nhấn để sửa">
         Dành cho học sinh Mầm non &amp; Tiểu học
       </div>
@@ -345,14 +347,14 @@ td.activity:hover .edit-icon{opacity:.5;}
   <!-- FOOTER -->
   <div class="rainbow-bar" style="margin-top:3mm;margin-bottom:2mm;"></div>
   <div class="footer">
-    <div class="footer-note">
-      📌 <strong>Ghi chú:</strong> Thời khóa biểu có thể thay đổi theo lịch nhà trường 8A, LÔ 30A, Lê Hông Phong, Hải Phòng.<br>
+    <div class="footer-note" id="footerNote" onclick="editHeader('footerNote','Ghi chú')" title="Nhấn để sửa">
+      📌 <strong >Ghi chú:</strong> Thời khóa biểu có thể thay đổi theo lịch nhà trường 8A, LÔ 30A, Lê Hông Phong, Hải Phòng.<br>
       📞 Liên hệ 0901 965 966 nếu có thắc mắc.<br>
       <span style="color:#9c9b9b;font-size:pt">Năm học 2026 · Tiếng Anh Mầm non &amp; Tiểu học</span>
     </div>
     <div class="footer-cheer">
       <div class="cheer-text">🌟 Học tiếng Anh mỗi ngày 🌟</div>
-      <div style="font-size:9pt;font-weight:700;color:#FF6B6B;margin-top:1mm">"Learning is Fun!" 🚀</div>
+      <div style="font-size:9pt;font-weight:700;color:#FF6B6B;margin-top:1mm">🚀 "Learning is Fun!" 🚀</div>
       <div style="font-size:12pt">⭐ ⭐ ⭐ ⭐ ⭐</div>
     </div>
     <div class="footer-mascot">🦉📚🍎<br>
@@ -490,7 +492,7 @@ const DEFAULT = {
 // STATE
 // ═══════════════════════════════════════════════
 let S = JSON.parse(JSON.stringify(DEFAULT)); // deep clone
-let editCell=null, editDay=null, editRow=null;
+// let editCell=null, editDay=null, editRow=null;
 let selColor=0, selEmoji='', selDayColor=0;
 
 // ═══════════════════════════════════════════════
@@ -692,7 +694,7 @@ function openDayM(di){
   buildDaySwatches();openM('mDay');
 }
 function saveDay(){
-  if(editDay===null)return;
+  // if(editDay===null)return;
   const vn=document.getElementById('dVn').value.trim();
   const en=document.getElementById('dEn').value.trim();
   if(vn) S.days[editDay].vn=vn;
@@ -715,7 +717,7 @@ function openSessM(ri){
   openM('mSess');
 }
 function saveSess(){
-  if(editRow===null)return;
+  // if(editRow===null)return;
   const row=S.rows[editRow];
   const label=document.getElementById('sLabel').value.trim();
   const time=document.getElementById('sTime').value.trim();
@@ -734,7 +736,7 @@ function saveSess(){
 function editHeader(id,label){
   const el=document.getElementById(id);
   const val=prompt('✏️ Sửa '+label+':',el.textContent.trim());
-  if(val!==null&&val.trim()) el.textContent=val.trim();
+  if(val.trim()) el.textContent=val.trim();
 }
 
 // ═══════════════════════════════════════════════
